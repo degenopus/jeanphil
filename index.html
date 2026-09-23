@@ -3,40 +3,194 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>JEAN PHIL — COMING SOON</title>
+    <title>JEAN PHIL GANGS</title>
+    <meta name="description" content="Jean Phil Gangs — the official home of the Jean Phil NFT collection. 2,222 proper rare Jean Phils. Sold out. Trading live on OpenSea." />
     <style>
+      :root {
+        --navy: #0a1130;
+        --navy-2: #101a45;
+        --gold: #f5c542;
+        --gold-dim: #c99a2e;
+        --cream: #f4ead2;
+      }
+      * { margin: 0; padding: 0; box-sizing: border-box; }
       html, body {
-        margin: 0;
-        padding: 0;
-        height: 100%;
-        background: #ffffff;
+        background: var(--navy);
+        color: var(--cream);
+        font-family: Georgia, 'Times New Roman', serif;
+        min-height: 100%;
       }
       body {
         display: flex;
+        flex-direction: column;
         align-items: center;
-        justify-content: center;
-        font-family: Arial, Helvetica, sans-serif;
-        color: #000000;
+        padding: 24px 16px 64px;
+      }
+      .banner {
+        width: 100%;
+        max-width: 1000px;
+        border-radius: 8px;
+        box-shadow: 0 12px 60px rgba(0, 0, 0, 0.6);
+        display: block;
+      }
+      .gangs {
+        width: 100%;
+        max-width: 1000px;
+        margin-top: 40px;
+      }
+      .gangs h1 {
+        font-size: clamp(28px, 5vw, 48px);
+        letter-spacing: 0.12em;
         text-align: center;
+        color: var(--gold);
+        text-transform: uppercase;
+        text-shadow: 0 2px 18px rgba(245, 197, 66, 0.35);
       }
-      h1 {
-        font-size: clamp(2.5rem, 10vw, 7rem);
-        font-weight: 900;
-        letter-spacing: 0.08em;
-        margin: 0;
-        line-height: 1.1;
+      .gangs .sub {
+        text-align: center;
+        margin-top: 8px;
+        font-size: clamp(13px, 2vw, 16px);
+        letter-spacing: 0.35em;
+        text-transform: uppercase;
+        color: rgba(244, 234, 210, 0.75);
       }
-      p {
-        font-size: clamp(1rem, 3vw, 1.75rem);
-        letter-spacing: 0.5em;
-        margin: 1.5rem 0 0;
+      .live-dot {
+        display: inline-block;
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: #3ddc78;
+        margin-right: 8px;
+        animation: pulse 1.4s ease-in-out infinite;
+        vertical-align: middle;
+      }
+      @keyframes pulse {
+        0%, 100% { opacity: 1; transform: scale(1); }
+        50% { opacity: 0.35; transform: scale(0.8); }
+      }
+      .feed {
+        margin-top: 28px;
+        border: 1px solid rgba(245, 197, 66, 0.35);
+        border-radius: 10px;
+        background: linear-gradient(180deg, var(--navy-2), var(--navy));
+        overflow: hidden;
+      }
+      .feed .row {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        padding: 18px 22px;
+        border-bottom: 1px solid rgba(245, 197, 66, 0.15);
+      }
+      .feed .row:last-child { border-bottom: none; }
+      .feed .tag {
+        flex: 0 0 auto;
+        font-family: 'Courier New', monospace;
+        font-size: 11px;
+        letter-spacing: 0.15em;
+        text-transform: uppercase;
+        color: var(--navy);
+        background: var(--gold);
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-weight: bold;
+      }
+      .feed .tag.blue {
+        background: #4d7cff;
+        color: #fff;
+      }
+      .feed .tag.green {
+        background: #3ddc78;
+        color: #06281a;
+      }
+      .feed p {
+        font-size: clamp(14px, 2.2vw, 17px);
+        line-height: 1.5;
+      }
+      .feed p b { color: var(--gold); }
+      .buttons {
+        margin-top: 40px;
+        display: flex;
+        gap: 18px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-family: 'Courier New', monospace;
+        font-size: 15px;
+        font-weight: bold;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        text-decoration: none;
+        padding: 15px 30px;
+        border-radius: 6px;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+      }
+      .btn:hover { transform: translateY(-2px); }
+      .btn svg { width: 20px; height: 20px; fill: currentColor; }
+      .btn.x {
+        background: #000;
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.35);
+      }
+      .btn.x:hover { box-shadow: 0 6px 24px rgba(255, 255, 255, 0.15); }
+      .btn.os {
+        background: var(--gold);
+        color: var(--navy);
+      }
+      .btn.os:hover { box-shadow: 0 6px 24px rgba(245, 197, 66, 0.4); }
+      .soon {
+        margin-top: 48px;
+        text-align: center;
+        font-family: 'Courier New', monospace;
+        font-size: 12px;
+        letter-spacing: 0.4em;
+        text-transform: uppercase;
+        color: rgba(244, 234, 210, 0.45);
       }
     </style>
   </head>
   <body>
-    <main>
-      <h1>JEAN PHIL</h1>
-      <p>COMING SOON</p>
-    </main>
+    <img class="banner" src="assets/banner.jpg" alt="Jean Phil Gangs" />
+
+    <section class="gangs">
+      <h1>Jean Phil Gangs</h1>
+      <p class="sub"><span class="live-dot"></span>Happening Now</p>
+
+      <div class="feed">
+        <div class="row">
+          <span class="tag">Sold Out</span>
+          <p>All <b>2,222</b> Jean Phils minted — not a single one left for the slow hands.</p>
+        </div>
+        <div class="row">
+          <span class="tag green">Live</span>
+          <p>Trading is live on <b>OpenSea</b> — the Gangs are flipping proper rare.</p>
+        </div>
+        <div class="row">
+          <span class="tag blue">Reveal</span>
+          <p>The reveal has landed. Check your Jean Phil — rinse or get rinsed.</p>
+        </div>
+        <div class="row">
+          <span class="tag">Gangs</span>
+          <p>Jean Phil went viral on TikTok — the movement is only getting started.</p>
+        </div>
+      </div>
+
+      <div class="buttons">
+        <a class="btn x" href="https://x.com/jeanphil_nft" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.9 1.15h3.68l-8.04 9.19L24 22.85h-7.41l-5.8-7.58-6.64 7.58H.47l8.6-9.83L0 1.15h7.59l5.24 6.93 6.07-6.93Zm-1.29 19.5h2.04L6.49 3.24H4.3l13.31 17.41Z"/></svg>
+          Follow on X
+        </a>
+        <a class="btn os" href="https://opensea.io/collection/jeanphil-nft" target="_blank" rel="noopener">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22.86 13.13c0 5.27-4.28 9.54-9.55 9.54-.86 0-1.7-.12-2.5-.33l-4.58 2.64v-3.4A9.53 9.53 0 0 1 3.76 13.1c0-5.28 4.28-9.55 9.55-9.55s9.55 4.27 9.55 9.58Zm-9.55-7.7a7.7 7.7 0 0 0-7.68 7.68c0 1.75.6 3.36 1.6 4.65l-.15 1.85 2.04-1.09c.67.3 1.41.47 2.19.47a7.7 7.7 0 0 0 7.68-7.68 7.7 7.7 0 0 0-7.68-7.88Zm3.34 7.63c-.16-.09-1.02-.5-1.18-.56-.16-.06-.27-.09-.39.09-.11.16-.45.56-.55.67-.1.11-.2.13-.37.04-.16-.09-.69-.25-1.32-.81-.49-.44-.82-.98-.91-1.14-.1-.17-.01-.26.07-.34.07-.08.16-.2.25-.29.08-.1.11-.17.16-.29.06-.11.03-.21-.01-.3-.05-.08-.39-.95-.54-1.3-.14-.34-.29-.3-.4-.3h-.34c-.12 0-.3.04-.46.22-.16.17-.6.59-.6 1.45 0 .85.62 1.68.71 1.79.09.12 1.23 1.88 2.98 2.64.42.18.75.29 1 .37.42.13.8.11 1.1.07.34-.05 1.02-.42 1.17-.82.14-.41.14-.75.09-.82-.04-.08-.15-.12-.31-.21Z"/></svg>
+          OpenSea
+        </a>
+      </div>
+    </section>
+
+    <p class="soon">Full site coming soon</p>
   </body>
 </html>

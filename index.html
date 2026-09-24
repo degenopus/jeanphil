@@ -59,13 +59,41 @@
         transition: transform 0.15s ease;
       }
       .og:hover { transform: translateY(-3px); }
-      .og img {
+      .og .og-frame {
+        position: relative;
         width: 240px;
         height: 240px;
-        object-fit: cover;
-        border: 2px solid #000000;
-        border-radius: 8px;
+        border: 3px solid #000000;
+        border-radius: 10px;
+        overflow: hidden;
         box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
+        transition: box-shadow 0.15s ease;
+      }
+      .og .og-frame img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        transition: transform 0.2s ease;
+      }
+      .og:hover .og-frame {
+        box-shadow: 0 14px 44px rgba(0, 0, 0, 0.32);
+      }
+      .og:hover .og-frame img { transform: scale(1.05); }
+      .og .og-cta {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: #000000;
+        color: #ffffff;
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 12px;
+        font-weight: bold;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        text-align: center;
+        padding: 10px 0 11px;
       }
       .og .og-title {
         font-size: 17px;
@@ -91,7 +119,10 @@
   </head>
   <body>
     <a class="og" href="https://opensea.io/collection/og-jean-phil" target="_blank" rel="noopener">
-      <img src="assets/og.jpg" alt="OG Jean Phil" />
+      <span class="og-frame">
+        <img src="assets/og.jpg" alt="OG Jean Phil" />
+        <span class="og-cta">View on OpenSea &#8599;</span>
+      </span>
       <span class="og-title">&#123;OG&#125; Jean Phil</span>
       <span class="og-sub">Limited editions for OG</span>
     </a>

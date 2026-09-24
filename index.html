@@ -49,6 +49,37 @@
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
       }
       .btn svg { width: 20px; height: 20px; fill: currentColor; }
+      .og {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 14px;
+        text-decoration: none;
+        color: #000000;
+        transition: transform 0.15s ease;
+      }
+      .og:hover { transform: translateY(-3px); }
+      .og img {
+        width: 240px;
+        height: 240px;
+        object-fit: cover;
+        border: 2px solid #000000;
+        border-radius: 8px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
+      }
+      .og .og-title {
+        font-size: 17px;
+        font-weight: bold;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+      }
+      .og .og-sub {
+        font-family: 'Courier New', monospace;
+        font-size: 12px;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: rgba(0, 0, 0, 0.65);
+      }
       .soon {
         font-family: 'Courier New', monospace;
         font-size: 12px;
@@ -59,6 +90,11 @@
     </style>
   </head>
   <body>
+    <a class="og" href="https://opensea.io/collection/og-jean-phil" target="_blank" rel="noopener">
+      <img src="assets/og.jpg" alt="OG Jean Phil" />
+      <span class="og-title">&#123;OG&#125; Jean Phil</span>
+      <span class="og-sub">Limited editions for OG</span>
+    </a>
     <div class="buttons">
       <a class="btn" href="https://x.com/jeanphil_nft" target="_blank" rel="noopener">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.9 1.15h3.68l-8.04 9.19L24 22.85h-7.41l-5.8-7.58-6.64 7.58H.47l8.6-9.83L0 1.15h7.59l5.24 6.93 6.07-6.93Zm-1.29 19.5h2.04L6.49 3.24H4.3l13.31 17.41Z"/></svg>

@@ -193,6 +193,21 @@
         font-family: 'Courier New', monospace; font-size: 11px;
         color: rgba(0,0,0,0.55); line-height: 1.6; margin-top: 4px;
       }
+
+      /* ---- Community gallery ---- */
+      .ggrid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+        gap: 12px;
+        width: 100%;
+      }
+      .gcell {
+        border: 2px solid #000000; border-radius: 8px;
+        overflow: hidden; display: block;
+        transition: transform 0.12s ease, box-shadow 0.12s ease;
+      }
+      .gcell:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.25); }
+      .gcell img { width: 100%; display: block; aspect-ratio: 3 / 2; object-fit: cover; }
       .hint {
         font-family: 'Courier New', monospace;
         font-size: 11px;
@@ -235,7 +250,7 @@
 
     <section class="maker">
       <h2>Banner Maker</h2>
-      <p class="step">Connect wallet &middot; pick your Jean Phil &middot; get your Twitter banner</p>
+      <p class="step">Connect wallet &middot; pick your Jean Phil &middot; 3 free banners per day</p>
       <button class="btn" id="connectBtn">Connect Wallet</button>
       <p class="status" id="status"></p>
       <div class="grid" id="grid"></div>
@@ -246,6 +261,12 @@
         straight into your post (Ctrl+V / long-press) &mdash; X doesn&rsquo;t let
         websites attach images automatically. Crop it however you like.
       </p>
+    </section>
+
+    <section class="maker" id="gallery" style="display:none">
+      <h2>Gallery</h2>
+      <p class="step">Banners created by the community</p>
+      <div class="ggrid" id="ggrid"></div>
     </section>
 
     <div class="wc-overlay" id="wcOverlay">
@@ -275,6 +296,7 @@
       const status = $("status"), grid = $("grid"), connectBtn = $("connectBtn"),
             genBtn = $("genBtn"), result = $("result"), hint = $("hint");
       let selected = null, selectedTokenId = null, generatedImage = null;
+      let connectedAddress = null, limitLeft = null;
 
       function setStatus(msg, isErr) {
         status.textContent = msg || "";
@@ -399,8 +421,14 @@
       }
 
       async function finishConnect(address) {
+        connectedAddress = address;
         connectBtn.textContent = address.slice(0, 6) + "..." + address.slice(-4);
         await loadNfts(address);
+        try {
+          const lim = await api("/api/limit", { address });
+          limitLeft = lim.remaining;
+          setStatus("Pick one of your Jean Phils:  ·  " + limitLeft + " of " + lim.limit + " free banners left today");
+        } catch (e) {}
       }
 
       function connect() { openWalletModal(); }
@@ -508,6 +536,7 @@
             image: buildComposite(selected).toDataURL("image/png"),
             mask: buildMask().toDataURL("image/png"),
             tokenId: selectedTokenId,
+            address: connectedAddress,
           });
           generatedImage = await overlayOriginal(out.image, selected);
           result.innerHTML = "";
@@ -538,10 +567,26 @@
           row.appendChild(tweet);
           result.appendChild(row);
           hint.style.display = "block";
-          setStatus("Done. Your banner is ready.");
+          if (typeof out.remaining === "number") limitLeft = out.remaining;
+          setStatus("Done. Your banner is ready.  ·  " + limitLeft + " of 3 free banners left today.");
+          // small preview -> community gallery (fire and forget)
+          try {
+            const pv = document.createElement("canvas");
+            pv.width = 384; pv.height = 256;
+            pv.getContext("2d").drawImage(img, 0, 0, 384, 256);
+            api("/api/gallery", {
+              image: pv.toDataURL("image/jpeg", 0.8),
+              tokenId: selectedTokenId,
+              address: connectedAddress,
+            }).then(() => loadGallery()).catch(() => {});
+          } catch (e) {}
         } catch (e) {
           result.innerHTML = "";
-          setStatus("Generation failed: " + e.message, true);
+          if (String(e.message).startsWith("daily_limit")) {
+            setStatus("Daily limit reached — 3 free banners per day per wallet. Come back tomorrow.", true);
+          } else {
+            setStatus("Generation failed: " + e.message, true);
+          }
         } finally {
           genBtn.disabled = false;
         }
@@ -561,9 +606,37 @@
       connectBtn.onclick = connect;
       genBtn.onclick = generate;
 
+      // ---- Community gallery (previews committed to the repo) ----
+      async function loadGallery() {
+        try {
+          const r = await fetch("gallery/index.json?_=" + Date.now());
+          if (!r.ok) return;
+          const items = await r.json();
+          if (!Array.isArray(items) || !items.length) return;
+          $("gallery").style.display = "flex";
+          const g = $("ggrid");
+          g.innerHTML = "";
+          items.slice(0, 24).forEach((it) => {
+            const a = document.createElement("a");
+            a.className = "gcell";
+            a.href = "gallery/" + it.f;
+            a.target = "_blank";
+            a.rel = "noopener";
+            const im = document.createElement("img");
+            im.loading = "lazy";
+            im.src = "gallery/" + it.f;
+            im.alt = "Jean Phil banner";
+            a.appendChild(im);
+            g.appendChild(a);
+          });
+        } catch (e) {}
+      }
+      loadGallery();
+
       // dev mode: ?dev_address=0x... skips wallet connect (local testing only)
       const dev = new URLSearchParams(location.search).get("dev_address");
       if (dev) {
+        connectedAddress = dev;
         connectBtn.style.display = "none";
         setStatus("Dev mode: " + dev.slice(0, 6) + "..." + dev.slice(-4));
         loadNfts(dev);

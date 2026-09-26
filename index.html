@@ -283,6 +283,7 @@
 
       function gwFallback(img, ipfsPath) {
         let i = 0;
+        img.crossOrigin = "anonymous"; // keep canvas untainted for compositing
         img.onerror = () => {
           i++;
           if (i < GATEWAYS.length) img.src = GATEWAYS[i] + "/" + ipfsPath;
@@ -442,17 +443,57 @@
         }
       }
 
-      function imgToDataUrl(img) {
+      const BANNER_W = 1536, BANNER_H = 1024;
+
+      // Composite: original NFT square on the right of a 1536x1024 canvas.
+      // The character is NEVER re-rendered — the model only paints the room,
+      // then we overlay the untouched original back with a feathered oval.
+      function buildComposite(nftImg) {
+        const comp = document.createElement("canvas");
+        comp.width = BANNER_W; comp.height = BANNER_H;
+        const cx = comp.getContext("2d");
+        cx.fillStyle = "#0a0a0c";
+        cx.fillRect(0, 0, BANNER_W, BANNER_H);
+        cx.drawImage(nftImg, 512, 0, 1024, 1024);
+        return comp;
+      }
+
+      function buildMask() {
+        const m = document.createElement("canvas");
+        m.width = BANNER_W; m.height = BANNER_H;
+        const mx = m.getContext("2d");
+        mx.fillStyle = "#ffffff";
+        mx.beginPath();
+        if (mx.roundRect) mx.roundRect(520, 8, 1016, 1008, 48);
+        else mx.rect(520, 8, 1016, 1008);
+        mx.fill();
+        return m;
+      }
+
+      function overlayOriginal(generatedDataUrl, nftImg) {
         return new Promise((resolve, reject) => {
-          fetch(img.src)
-            .then((r) => r.blob())
-            .then((b) => {
-              const fr = new FileReader();
-              fr.onload = () => resolve(fr.result);
-              fr.onerror = reject;
-              fr.readAsDataURL(b);
-            })
-            .catch(reject);
+          const gen = new Image();
+          gen.onload = () => {
+            const fin = document.createElement("canvas");
+            fin.width = BANNER_W; fin.height = BANNER_H;
+            const fx = fin.getContext("2d");
+            fx.drawImage(gen, 0, 0, BANNER_W, BANNER_H);
+            const ov = document.createElement("canvas");
+            ov.width = 1024; ov.height = 1024;
+            const ox = ov.getContext("2d");
+            ox.drawImage(nftImg, 0, 0, 1024, 1024);
+            ox.globalCompositeOperation = "destination-in";
+            const g = ox.createRadialGradient(512, 512, 300, 512, 512, 690);
+            g.addColorStop(0, "rgba(0,0,0,1)");
+            g.addColorStop(0.72, "rgba(0,0,0,1)");
+            g.addColorStop(1, "rgba(0,0,0,0)");
+            ox.fillStyle = g;
+            ox.fillRect(0, 0, 1024, 1024);
+            fx.drawImage(ov, 512, 0);
+            resolve(fin.toDataURL("image/png"));
+          };
+          gen.onerror = reject;
+          gen.src = generatedDataUrl;
         });
       }
 
@@ -462,13 +503,17 @@
         result.innerHTML = '<div class="spinner"></div>';
         setStatus("Generating your banner... this takes about a minute.");
         try {
-          const dataUrl = await imgToDataUrl(selected);
-          const out = await api("/api/generate", { image: dataUrl, tokenId: selectedTokenId });
-          generatedImage = out.image;
+          await selected.decode();
+          const out = await api("/api/generate", {
+            image: buildComposite(selected).toDataURL("image/png"),
+            mask: buildMask().toDataURL("image/png"),
+            tokenId: selectedTokenId,
+          });
+          generatedImage = await overlayOriginal(out.image, selected);
           result.innerHTML = "";
           const img = document.createElement("img");
           img.className = "banner";
-          img.src = out.image;
+          img.src = generatedImage;
           result.appendChild(img);
           const row = document.createElement("div");
           row.className = "buttons";
@@ -476,7 +521,7 @@
           dl.className = "btn";
           dl.textContent = "Download Banner";
           dl.download = "jeanphil-banner.png";
-          dl.href = out.image;
+          dl.href = generatedImage;
           const copy = document.createElement("button");
           copy.className = "btn";
           copy.textContent = "Copy Image";

@@ -158,6 +158,41 @@
         animation: spin 0.8s linear infinite;
       }
       @keyframes spin { to { transform: rotate(360deg); } }
+
+      /* ---- Wallet picker ---- */
+      .wc-overlay {
+        position: fixed; inset: 0; z-index: 100;
+        background: rgba(255,255,255,0.94);
+        display: none; align-items: center; justify-content: center;
+      }
+      .wc-overlay.open { display: flex; }
+      .wc-modal {
+        background: #ffffff; border: 3px solid #000000;
+        width: min(380px, 92vw); padding: 22px;
+      }
+      .wc-head {
+        display: flex; justify-content: space-between; align-items: center;
+        font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase;
+        margin-bottom: 16px;
+      }
+      .wc-close {
+        background: none; border: none; font-size: 18px; cursor: pointer;
+        font-weight: 800; padding: 0 4px;
+      }
+      .wc-item {
+        display: flex; align-items: center; gap: 12px; width: 100%;
+        padding: 13px 14px; border: 2px solid #000000; background: #ffffff;
+        margin-bottom: 10px; cursor: pointer; font-weight: 600; font-size: 15px;
+        font-family: inherit; text-align: left;
+        transition: background 0.12s ease, color 0.12s ease;
+      }
+      .wc-item:hover { background: #000000; color: #ffffff; }
+      .wc-item img { width: 24px; height: 24px; border-radius: 4px; }
+      .wc-item.disabled { opacity: 0.45; pointer-events: none; }
+      .wc-note {
+        font-family: 'Courier New', monospace; font-size: 11px;
+        color: rgba(0,0,0,0.55); line-height: 1.6; margin-top: 4px;
+      }
       .hint {
         font-family: 'Courier New', monospace;
         font-size: 11px;
@@ -212,6 +247,17 @@
         websites attach images automatically. Crop it however you like.
       </p>
     </section>
+
+    <div class="wc-overlay" id="wcOverlay">
+      <div class="wc-modal">
+        <div class="wc-head">
+          <span>Connect Wallet</span>
+          <button class="wc-close" id="wcClose" aria-label="Close">&#10005;</button>
+        </div>
+        <div id="wcList"></div>
+        <p class="wc-note" id="wcNote"></p>
+      </div>
+    </div>
 
     <script>
       // WalletConnect (Reown) project id — free at https://cloud.reown.com
@@ -290,22 +336,73 @@
         return session.namespaces.eip155.accounts[0].split(":")[2];
       }
 
-      async function connect() {
+      // ---- Wallet picker (EIP-6963 discovery + WalletConnect) ----
+      const injectedWallets = new Map(); // uuid -> { info, provider }
+      window.addEventListener("eip6963:announceProvider", (e) => {
+        const { info, provider } = e.detail;
+        if (info && provider && !injectedWallets.has(info.uuid)) {
+          injectedWallets.set(info.uuid, { info, provider });
+        }
+      });
+      window.dispatchEvent(new Event("eip6963:requestProvider"));
+
+      const wcOverlay = $("wcOverlay");
+
+      function closeWalletModal() { wcOverlay.classList.remove("open"); }
+      $("wcClose").onclick = closeWalletModal;
+      wcOverlay.addEventListener("click", (e) => { if (e.target === wcOverlay) closeWalletModal(); });
+
+      function openWalletModal() {
+        const list = $("wcList");
+        list.innerHTML = "";
+        const wallets = [...injectedWallets.values()];
+        // fallback: single injected provider that doesn't speak EIP-6963
+        if (window.ethereum && !wallets.length) {
+          wallets.push({ info: { name: "Browser Wallet (MetaMask etc.)", icon: "" }, provider: window.ethereum });
+        }
+        wallets.forEach((w) => {
+          const b = document.createElement("button");
+          b.className = "wc-item";
+          b.innerHTML = (w.info.icon ? '<img src="' + w.info.icon + '" alt="">' : "") + "<span></span>";
+          b.querySelector("span").textContent = w.info.name;
+          b.onclick = () => { closeWalletModal(); connectWith(w.provider); };
+          list.appendChild(b);
+        });
+
+        const wcConfigured = WC_PROJECT_ID && !WC_PROJECT_ID.startsWith("PASTE_");
+        const wc = document.createElement("button");
+        wc.className = "wc-item" + (wcConfigured ? "" : " disabled");
+        wc.innerHTML = "<span>WalletConnect (mobile &amp; other wallets)</span>";
+        if (wcConfigured) {
+          wc.onclick = () => {
+            closeWalletModal();
+            connectViaWalletConnect().then(finishConnect).catch((e) => setStatus(e.message || "Connection failed", true));
+          };
+        }
+        list.appendChild(wc);
+
+        $("wcNote").textContent = wallets.length
+          ? (wcConfigured ? "" : "WalletConnect setup is pending — use a browser wallet for now.")
+          : "No browser wallet detected. Install MetaMask, or use WalletConnect on mobile (setup pending).";
+        wcOverlay.classList.add("open");
+      }
+
+      async function connectWith(provider) {
         try {
           setStatus("Connecting...");
-          let address;
-          if (window.ethereum) {
-            const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
-            address = accounts[0];
-          } else {
-            address = await connectViaWalletConnect();
-          }
-          connectBtn.textContent = address.slice(0, 6) + "..." + address.slice(-4);
-          await loadNfts(address);
+          const accounts = await provider.request({ method: "eth_requestAccounts" });
+          await finishConnect(accounts[0]);
         } catch (e) {
           setStatus(e.message || "Connection failed", true);
         }
       }
+
+      async function finishConnect(address) {
+        connectBtn.textContent = address.slice(0, 6) + "..." + address.slice(-4);
+        await loadNfts(address);
+      }
+
+      function connect() { openWalletModal(); }
 
       async function loadNfts(address) {
         setStatus("Checking your Jean Phils...");

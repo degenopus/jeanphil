@@ -7,7 +7,6 @@
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
       html, body {
-        height: 100%;
         background: #ffffff;
         color: #000000;
         font-family: Arial, Helvetica, sans-serif;
@@ -16,15 +15,8 @@
         display: flex;
         flex-direction: column;
         align-items: center;
-        justify-content: center;
+        padding: 48px 16px 80px;
         gap: 40px;
-        padding: 24px;
-      }
-      .buttons {
-        display: flex;
-        gap: 18px;
-        flex-wrap: wrap;
-        justify-content: center;
       }
       .btn {
         display: inline-flex;
@@ -40,7 +32,8 @@
         border: 2px solid #000000;
         color: #000000;
         background: #ffffff;
-        transition: transform 0.15s ease, box-shadow 0.15s ease;
+        cursor: pointer;
+        transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, color 0.15s ease;
       }
       .btn:hover {
         background: #000000;
@@ -48,7 +41,14 @@
         transform: translateY(-2px);
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
       }
+      .btn:disabled { opacity: 0.35; pointer-events: none; }
       .btn svg { width: 20px; height: 20px; fill: currentColor; }
+      .soon {
+        font-family: 'Courier New', monospace;
+        font-size: 12px;
+        letter-spacing: 0.4em;
+        text-transform: uppercase;
+      }
       .og {
         display: flex;
         flex-direction: column;
@@ -69,51 +69,106 @@
         box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
         transition: box-shadow 0.15s ease;
       }
-      .og .og-frame img {
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        display: block;
-        transition: transform 0.2s ease;
-      }
-      .og:hover .og-frame {
-        box-shadow: 0 14px 44px rgba(0, 0, 0, 0.32);
-      }
+      .og .og-frame img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.2s ease; }
+      .og:hover .og-frame { box-shadow: 0 14px 44px rgba(0, 0, 0, 0.32); }
       .og:hover .og-frame img { transform: scale(1.05); }
       .og .og-cta {
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: 0;
+        position: absolute; left: 0; right: 0; bottom: 0;
+        background: #000000; color: #ffffff;
+        font-size: 12px; font-weight: bold; letter-spacing: 0.22em;
+        text-transform: uppercase; text-align: center; padding: 10px 0 11px;
+      }
+      .og .og-title { font-size: 17px; font-weight: bold; letter-spacing: 0.18em; text-transform: uppercase; }
+      .og .og-sub {
+        font-family: 'Courier New', monospace; font-size: 12px;
+        letter-spacing: 0.28em; text-transform: uppercase; color: rgba(0,0,0,0.65);
+      }
+      .buttons { display: flex; gap: 18px; flex-wrap: wrap; justify-content: center; }
+
+      /* ---- Banner Maker ---- */
+      .maker {
+        width: 100%;
+        max-width: 860px;
+        border-top: 2px solid #000000;
+        padding-top: 40px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 28px;
+      }
+      .maker h2 {
+        font-size: clamp(22px, 4vw, 34px);
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+      .maker .step {
+        font-family: 'Courier New', monospace;
+        font-size: 12px;
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+        color: rgba(0,0,0,0.6);
+        text-align: center;
+      }
+      .status {
+        font-family: 'Courier New', monospace;
+        font-size: 13px;
+        letter-spacing: 0.1em;
+        text-align: center;
+        min-height: 18px;
+      }
+      .status.err { color: #b00020; }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 14px;
+        width: 100%;
+      }
+      .grid .cell {
+        border: 2px solid #000000;
+        border-radius: 8px;
+        overflow: hidden;
+        cursor: pointer;
+        aspect-ratio: 1;
+        background: #f2f2f2;
+        transition: transform 0.12s ease, box-shadow 0.12s ease;
+      }
+      .grid .cell img { width: 100%; height: 100%; object-fit: cover; display: block; }
+      .grid .cell:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.25); }
+      .grid .cell.selected { outline: 4px solid #000000; outline-offset: 2px; }
+      .grid .cell .cap {
+        font-family: 'Courier New', monospace;
+        font-size: 10px;
+        letter-spacing: 0.08em;
+        text-align: center;
+        padding: 4px 2px;
         background: #000000;
         color: #ffffff;
-        font-family: Arial, Helvetica, sans-serif;
-        font-size: 12px;
-        font-weight: bold;
-        letter-spacing: 0.22em;
-        text-transform: uppercase;
+      }
+      .result { display: flex; flex-direction: column; align-items: center; gap: 18px; width: 100%; }
+      .result img.banner {
+        width: 100%;
+        border: 2px solid #000000;
+        border-radius: 8px;
+      }
+      .spinner {
+        width: 34px; height: 34px;
+        border: 3px solid rgba(0,0,0,0.15);
+        border-top-color: #000000;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+      .hint {
+        font-family: 'Courier New', monospace;
+        font-size: 11px;
+        letter-spacing: 0.12em;
+        color: rgba(0,0,0,0.55);
         text-align: center;
-        padding: 10px 0 11px;
+        max-width: 520px;
+        line-height: 1.7;
       }
-      .og .og-title {
-        font-size: 17px;
-        font-weight: bold;
-        letter-spacing: 0.18em;
-        text-transform: uppercase;
-      }
-      .og .og-sub {
-        font-family: 'Courier New', monospace;
-        font-size: 12px;
-        letter-spacing: 0.28em;
-        text-transform: uppercase;
-        color: rgba(0, 0, 0, 0.65);
-      }
-      .soon {
-        font-family: 'Courier New', monospace;
-        font-size: 12px;
-        letter-spacing: 0.4em;
-        text-transform: uppercase;
-        color: #000000;
+      @media (max-width: 560px) {
+        .buttons .btn { padding: 13px 18px; font-size: 13px; }
       }
     </style>
   </head>
@@ -126,6 +181,7 @@
       <span class="og-title">&#123;OG&#125; Jean Phil</span>
       <span class="og-sub">Limited editions for OG</span>
     </a>
+
     <div class="buttons">
       <a class="btn" href="https://x.com/jeanphil_nft" target="_blank" rel="noopener">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.9 1.15h3.68l-8.04 9.19L24 22.85h-7.41l-5.8-7.58-6.64 7.58H.47l8.6-9.83L0 1.15h7.59l5.24 6.93 6.07-6.93Zm-1.29 19.5h2.04L6.49 3.24H4.3l13.31 17.41Z"/></svg>
@@ -139,6 +195,237 @@
         Join Group Chat
       </a>
     </div>
+
     <p class="soon">Full site coming soon</p>
+
+    <section class="maker">
+      <h2>Banner Maker</h2>
+      <p class="step">Connect wallet &middot; pick your Jean Phil &middot; get your Twitter banner</p>
+      <button class="btn" id="connectBtn">Connect Wallet</button>
+      <p class="status" id="status"></p>
+      <div class="grid" id="grid"></div>
+      <button class="btn" id="genBtn" style="display:none">Generate My Banner</button>
+      <div class="result" id="result"></div>
+      <p class="hint" id="hint" style="display:none">
+        The post text is pre-filled. Press Copy Image, then paste the banner
+        straight into your post (Ctrl+V / long-press) &mdash; X doesn&rsquo;t let
+        websites attach images automatically. Crop it however you like.
+      </p>
+    </section>
+
+    <script>
+      // WalletConnect (Reown) project id — free at https://cloud.reown.com
+      // Needed only for mobile / non-injected wallets.
+      const WC_PROJECT_ID = "PASTE_YOUR_REOWN_PROJECT_ID";
+
+      const GATEWAYS = [
+        "https://ipfs.filebase.io/ipfs",
+        "https://dweb.link/ipfs",
+        "https://ipfs.io/ipfs",
+        "https://gateway.pinata.cloud/ipfs",
+      ];
+
+      const $ = (id) => document.getElementById(id);
+      const status = $("status"), grid = $("grid"), connectBtn = $("connectBtn"),
+            genBtn = $("genBtn"), result = $("result"), hint = $("hint");
+      let selected = null, selectedTokenId = null, generatedImage = null;
+
+      function setStatus(msg, isErr) {
+        status.textContent = msg || "";
+        status.className = "status" + (isErr ? " err" : "");
+      }
+
+      function gwFallback(img, ipfsPath) {
+        let i = 0;
+        img.onerror = () => {
+          i++;
+          if (i < GATEWAYS.length) img.src = GATEWAYS[i] + "/" + ipfsPath;
+        };
+        img.src = GATEWAYS[0] + "/" + ipfsPath;
+      }
+
+      const API_BASE = ["localhost", "127.0.0.1"].includes(location.hostname)
+        ? "" // local dev: same-origin (python server on :8787)
+        : "https://jeanphil-banner.jeanphilnft.workers.dev";
+
+      async function api(path, body) {
+        const r = await fetch(API_BASE + path, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+        const data = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(data.error || ("HTTP " + r.status));
+        return data;
+      }
+
+      // WalletConnect for mobile + all popular EVM wallets.
+      // We only READ data, so the chain the wallet is on doesn't matter —
+      // the address is identical across all EVM chains.
+      async function connectViaWalletConnect() {
+        if (!WC_PROJECT_ID || WC_PROJECT_ID.startsWith("PASTE_")) {
+          throw new Error("WalletConnect is not configured yet. Use MetaMask or another browser wallet.");
+        }
+        setStatus("Opening WalletConnect...");
+        const [{ default: SignClient }, { WalletConnectModal }] = await Promise.all([
+          import("https://esm.sh/@walletconnect/sign-client@2"),
+          import("https://esm.sh/@walletconnect/modal"),
+        ]);
+        const modal = new WalletConnectModal({ projectId: WC_PROJECT_ID });
+        const client = await SignClient.init({
+          projectId: WC_PROJECT_ID,
+          metadata: {
+            name: "Jean Phil Banner Maker",
+            description: "Turn your Jean Phil NFT into a Twitter banner",
+            url: location.origin,
+            icons: [],
+          },
+        });
+        const { uri, approval } = await client.connect({
+          requiredNamespaces: { eip155: { methods: [], chains: ["eip155:1"], events: [] } },
+        });
+        if (uri) modal.openModal({ uri });
+        const session = await approval();
+        modal.closeModal();
+        return session.namespaces.eip155.accounts[0].split(":")[2];
+      }
+
+      async function connect() {
+        try {
+          setStatus("Connecting...");
+          let address;
+          if (window.ethereum) {
+            const accounts = await window.ethereum.request({ method: "eth_requestAccounts" });
+            address = accounts[0];
+          } else {
+            address = await connectViaWalletConnect();
+          }
+          connectBtn.textContent = address.slice(0, 6) + "..." + address.slice(-4);
+          await loadNfts(address);
+        } catch (e) {
+          setStatus(e.message || "Connection failed", true);
+        }
+      }
+
+      async function loadNfts(address) {
+        setStatus("Checking your Jean Phils...");
+        try {
+          const { tokens } = await api("/api/nfts", { address });
+          if (!tokens.length) {
+            setStatus("No Jean Phil NFTs found in this wallet.", true);
+            return;
+          }
+          setStatus("Pick one of your Jean Phils:");
+          grid.innerHTML = "";
+          tokens.forEach((t) => {
+            const cell = document.createElement("div");
+            cell.className = "cell";
+            if (t.imageIpfs && t.imageIpfs.startsWith("ipfs://")) {
+              const img = document.createElement("img");
+              img.alt = t.name;
+              gwFallback(img, t.imageIpfs.slice(7));
+              cell.appendChild(img);
+            }
+            const cap = document.createElement("div");
+            cap.className = "cap";
+            cap.textContent = "#" + t.tokenId;
+            cell.appendChild(cap);
+            cell.onclick = () => {
+              grid.querySelectorAll(".cell").forEach((c) => c.classList.remove("selected"));
+              cell.classList.add("selected");
+              selected = cell.querySelector("img");
+              selectedTokenId = t.tokenId;
+              genBtn.style.display = "inline-flex";
+              setStatus("Jean Phil #" + t.tokenId + " selected. Ready to generate.");
+            };
+            grid.appendChild(cell);
+          });
+        } catch (e) {
+          setStatus("Failed to load NFTs: " + e.message, true);
+        }
+      }
+
+      function imgToDataUrl(img) {
+        return new Promise((resolve, reject) => {
+          fetch(img.src)
+            .then((r) => r.blob())
+            .then((b) => {
+              const fr = new FileReader();
+              fr.onload = () => resolve(fr.result);
+              fr.onerror = reject;
+              fr.readAsDataURL(b);
+            })
+            .catch(reject);
+        });
+      }
+
+      async function generate() {
+        if (!selected) return;
+        genBtn.disabled = true;
+        result.innerHTML = '<div class="spinner"></div>';
+        setStatus("Generating your banner... this takes about a minute.");
+        try {
+          const dataUrl = await imgToDataUrl(selected);
+          const out = await api("/api/generate", { image: dataUrl, tokenId: selectedTokenId });
+          generatedImage = out.image;
+          result.innerHTML = "";
+          const img = document.createElement("img");
+          img.className = "banner";
+          img.src = out.image;
+          result.appendChild(img);
+          const row = document.createElement("div");
+          row.className = "buttons";
+          const dl = document.createElement("a");
+          dl.className = "btn";
+          dl.textContent = "Download Banner";
+          dl.download = "jeanphil-banner.png";
+          dl.href = out.image;
+          const copy = document.createElement("button");
+          copy.className = "btn";
+          copy.textContent = "Copy Image";
+          copy.onclick = copyImage;
+          const tweet = document.createElement("a");
+          tweet.className = "btn";
+          const text = encodeURIComponent("Look at my new banner \u{1F440} @jeanphil_nft #JeanPhil");
+          tweet.href = "https://x.com/intent/post?text=" + text;
+          tweet.target = "_blank";
+          tweet.rel = "noopener";
+          tweet.textContent = "Post on X";
+          row.appendChild(dl);
+          row.appendChild(copy);
+          row.appendChild(tweet);
+          result.appendChild(row);
+          hint.style.display = "block";
+          setStatus("Done. Your banner is ready.");
+        } catch (e) {
+          result.innerHTML = "";
+          setStatus("Generation failed: " + e.message, true);
+        } finally {
+          genBtn.disabled = false;
+        }
+      }
+
+      async function copyImage() {
+        if (!generatedImage) return;
+        try {
+          const blob = await (await fetch(generatedImage)).blob();
+          await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+          setStatus("Banner copied to clipboard — paste it into your post (Ctrl+V).");
+        } catch (e) {
+          setStatus("Copy failed — use Download Banner instead.", true);
+        }
+      }
+
+      connectBtn.onclick = connect;
+      genBtn.onclick = generate;
+
+      // dev mode: ?dev_address=0x... skips wallet connect (local testing only)
+      const dev = new URLSearchParams(location.search).get("dev_address");
+      if (dev) {
+        connectBtn.style.display = "none";
+        setStatus("Dev mode: " + dev.slice(0, 6) + "..." + dev.slice(-4));
+        loadNfts(dev);
+      }
+    </script>
   </body>
 </html>

@@ -317,7 +317,7 @@
       const status = $("status"), grid = $("grid"), connectBtn = $("connectBtn"),
             genBtn = $("genBtn"), result = $("result"), hint = $("hint");
       let selected = null, selectedTokenId = null, generatedImage = null;
-      let connectedAddress = null, limitLeft = null;
+      let connectedAddress = null, limitLeft = null, galleryToken = null;
 
       function setStatus(msg, isErr) {
         status.textContent = msg || "";
@@ -556,6 +556,7 @@
             address: connectedAddress,
           });
           generatedImage = out.image;
+          galleryToken = out.galleryToken || null;
           result.innerHTML = "";
           const img = document.createElement("img");
           img.className = "banner";
@@ -600,6 +601,7 @@
               full: pv.toDataURL("image/jpeg", 0.85),
               tokenId: selectedTokenId,
               address: connectedAddress,
+              galleryToken: galleryToken,
             }).then(() => loadGallery()).catch(() => {});
           } catch (e) {}
         } catch (e) {

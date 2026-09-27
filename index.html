@@ -207,7 +207,7 @@
         transition: transform 0.12s ease, box-shadow 0.12s ease;
       }
       .gcell:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.25); }
-      .gcell img { width: 100%; display: block; aspect-ratio: 3 / 2; object-fit: cover; }
+      .gcell img { width: 100%; display: block; aspect-ratio: 3 / 1; object-fit: cover; }
       .hint {
         font-family: 'Courier New', monospace;
         font-size: 11px;
@@ -515,7 +515,7 @@
         }
       }
 
-      const BANNER_W = 1536, BANNER_H = 1024;
+      const BANNER_W = 1920, BANNER_H = 640;
 
       async function generate() {
         if (!selected) return;
@@ -569,8 +569,8 @@
           try {
             await img.decode();
             const pv = document.createElement("canvas");
-            pv.width = 384; pv.height = 256;
-            pv.getContext("2d").drawImage(img, 0, 0, 384, 256);
+            pv.width = 384; pv.height = 128;
+            pv.getContext("2d").drawImage(img, 0, 0, 384, 128);
             api("/api/gallery", {
               image: pv.toDataURL("image/jpeg", 0.8),
               tokenId: selectedTokenId,

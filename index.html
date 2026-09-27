@@ -410,10 +410,31 @@
         wcOverlay.classList.add("open");
       }
 
+      let watchedProvider = null;
+      function watchProvider(provider) {
+        if (watchedProvider === provider || !provider || !provider.on) return;
+        watchedProvider = provider;
+        provider.on("accountsChanged", (accs) => {
+          if (accs && accs[0] && accs[0].toLowerCase() !== (connectedAddress || "").toLowerCase()) {
+            setStatus("Wallet switched — reloading your Jean Phils...");
+            finishConnect(accs[0]);
+          }
+        });
+        provider.on("disconnect", () => {
+          connectedAddress = null;
+          connectBtn.textContent = "Connect Wallet";
+        });
+      }
+
       async function connectWith(provider) {
         try {
           setStatus("Connecting...");
+          // force the wallet to show its account picker so switching accounts works
+          try {
+            await provider.request({ method: "wallet_requestPermissions", params: [{ eth_accounts: {} }] });
+          } catch (e) { /* wallet may not support it — fall through to eth_requestAccounts */ }
           const accounts = await provider.request({ method: "eth_requestAccounts" });
+          watchProvider(provider);
           await finishConnect(accounts[0]);
         } catch (e) {
           setStatus(e.message || "Connection failed", true);

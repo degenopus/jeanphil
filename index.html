@@ -523,6 +523,7 @@
           setStatus("Done. Your banner is ready.  ·  " + limitLeft + " of 3 free banners left today.");
           // small preview -> community gallery (fire and forget)
           try {
+            await img.decode();
             const pv = document.createElement("canvas");
             pv.width = 384; pv.height = 256;
             pv.getContext("2d").drawImage(img, 0, 0, 384, 256);

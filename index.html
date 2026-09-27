@@ -303,14 +303,29 @@
         status.className = "status" + (isErr ? " err" : "");
       }
 
-      function gwFallback(img, ipfsPath) {
-        let i = 0;
-        img.crossOrigin = "anonymous"; // keep canvas untainted for compositing
-        img.onerror = () => {
-          i++;
-          if (i < GATEWAYS.length) img.src = GATEWAYS[i] + "/" + ipfsPath;
-        };
-        img.src = GATEWAYS[0] + "/" + ipfsPath;
+      // NFT images go through our Worker proxy (gateway rotation + edge cache).
+      // Falls back to a labeled placeholder so a cell is never an empty square.
+      const imgUrlCache = new Map();
+      async function loadNftImage(img, ipfsPath, tokenId) {
+        try {
+          let url = imgUrlCache.get(ipfsPath);
+          if (!url) {
+            const r = await fetch(API_BASE + "/api/img", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ cid: ipfsPath }),
+            });
+            if (!r.ok) throw new Error("img " + r.status);
+            url = URL.createObjectURL(await r.blob()); // same-origin blob: canvas stays clean
+            imgUrlCache.set(ipfsPath, url);
+          }
+          img.src = url;
+        } catch (e) {
+          img.src = "data:image/svg+xml;utf8," + encodeURIComponent(
+            '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400">' +
+            '<rect width="400" height="400" fill="#141414"/>' +
+            '<text x="200" y="215" font-family="monospace" font-size="52" fill="#ffffff" text-anchor="middle">#' + tokenId + '</text></svg>');
+        }
       }
 
       const API_BASE = ["localhost", "127.0.0.1"].includes(location.hostname)
@@ -478,7 +493,7 @@
             if (t.imageIpfs && t.imageIpfs.startsWith("ipfs://")) {
               const img = document.createElement("img");
               img.alt = t.name;
-              gwFallback(img, t.imageIpfs.slice(7));
+              loadNftImage(img, t.imageIpfs.slice(7), t.tokenId);
               cell.appendChild(img);
             }
             const cap = document.createElement("div");

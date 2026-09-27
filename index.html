@@ -208,6 +208,23 @@
       }
       .gcell:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.25); }
       .gcell img { width: 100%; display: block; aspect-ratio: 3 / 1; object-fit: cover; }
+
+      /* ---- Lightbox ---- */
+      .lb-overlay {
+        position: fixed; inset: 0; z-index: 200;
+        background: rgba(255,255,255,0);
+        display: none; align-items: center; justify-content: center;
+        cursor: zoom-out;
+        transition: background 0.25s ease;
+      }
+      .lb-overlay.in { background: rgba(255,255,255,0.94); }
+      .lb-overlay img {
+        max-width: min(1152px, 92vw); max-height: 82vh; width: auto; height: auto;
+        border: 3px solid #000000; box-shadow: 0 24px 70px rgba(0,0,0,0.35);
+        transform: scale(0.94); opacity: 0;
+        transition: transform 0.25s ease, opacity 0.25s ease;
+      }
+      .lb-overlay.in img { transform: scale(1); opacity: 1; }
       .hint {
         font-family: 'Courier New', monospace;
         font-size: 11px;
@@ -278,6 +295,10 @@
         <div id="wcList"></div>
         <p class="wc-note" id="wcNote"></p>
       </div>
+    </div>
+
+    <div class="lb-overlay" id="lbOverlay">
+      <img id="lbImg" alt="Jean Phil banner">
     </div>
 
     <script>
@@ -569,8 +590,8 @@
           try {
             await img.decode();
             const pv = document.createElement("canvas");
-            pv.width = 384; pv.height = 128;
-            pv.getContext("2d").drawImage(img, 0, 0, 384, 128);
+            pv.width = 1152; pv.height = 384;
+            pv.getContext("2d").drawImage(img, 0, 0, 1152, 384);
             api("/api/gallery", {
               image: pv.toDataURL("image/jpeg", 0.8),
               tokenId: selectedTokenId,
@@ -603,6 +624,22 @@
       connectBtn.onclick = connect;
       genBtn.onclick = generate;
 
+      // ---- Lightbox ----
+      const lbOverlay = $("lbOverlay"), lbImg = $("lbImg");
+      function openLightbox(src) {
+        lbImg.src = src;
+        lbOverlay.style.display = "flex";
+        requestAnimationFrame(() => requestAnimationFrame(() => lbOverlay.classList.add("in")));
+      }
+      function closeLightbox() {
+        lbOverlay.classList.remove("in");
+        setTimeout(() => { lbOverlay.style.display = "none"; lbImg.src = ""; }, 250);
+      }
+      lbOverlay.addEventListener("click", closeLightbox);
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && lbOverlay.style.display === "flex") closeLightbox();
+      });
+
       // ---- Community gallery (previews committed to the repo) ----
       async function loadGallery() {
         try {
@@ -617,13 +654,16 @@
             const a = document.createElement("a");
             a.className = "gcell";
             a.href = "gallery/" + it.f;
-            a.target = "_blank";
-            a.rel = "noopener";
+            a.style.cursor = "zoom-in";
             const im = document.createElement("img");
             im.loading = "lazy";
             im.src = "gallery/" + it.f;
             im.alt = "Jean Phil banner";
             a.appendChild(im);
+            a.addEventListener("click", (e) => {
+              e.preventDefault();
+              openLightbox("gallery/" + it.f);
+            });
             g.appendChild(a);
           });
         } catch (e) {}

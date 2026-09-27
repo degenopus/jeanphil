@@ -375,6 +375,8 @@
       $("wcClose").onclick = closeWalletModal;
       wcOverlay.addEventListener("click", (e) => { if (e.target === wcOverlay) closeWalletModal(); });
 
+      const WALLET_ORDER = { "MetaMask": 0, "Trust Wallet": 1 };
+
       function openWalletModal() {
         const list = $("wcList");
         list.innerHTML = "";
@@ -383,6 +385,10 @@
         if (window.ethereum && !wallets.length) {
           wallets.push({ info: { name: "Browser Wallet (MetaMask etc.)", icon: "" }, provider: window.ethereum });
         }
+        // MetaMask first, Trust Wallet second, then the rest A-Z
+        wallets.sort((a, b) =>
+          (WALLET_ORDER[a.info.name] ?? 99) - (WALLET_ORDER[b.info.name] ?? 99) ||
+          a.info.name.localeCompare(b.info.name));
         wallets.forEach((w) => {
           const b = document.createElement("button");
           b.className = "wc-item";
@@ -429,10 +435,12 @@
       async function connectWith(provider) {
         try {
           setStatus("Connecting...");
-          // force the wallet to show its account picker so switching accounts works
+          // Wallets cache the granted account per site and silently return it.
+          // Revoking the cached permission first forces a fresh account picker,
+          // so switching to another account actually takes effect.
           try {
-            await provider.request({ method: "wallet_requestPermissions", params: [{ eth_accounts: {} }] });
-          } catch (e) { /* wallet may not support it — fall through to eth_requestAccounts */ }
+            await provider.request({ method: "wallet_revokePermissions", params: [{ eth_accounts: [] }] });
+          } catch (e) { /* wallet may not support revoke — continue anyway */ }
           const accounts = await provider.request({ method: "eth_requestAccounts" });
           watchProvider(provider);
           await finishConnect(accounts[0]);

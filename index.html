@@ -137,6 +137,26 @@
         min-height: 18px;
       }
       .status.err { color: #b00020; }
+      .sync {
+        font-family: 'Courier New', monospace;
+        font-size: 11px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: rgba(0,0,0,0.45);
+        text-align: center;
+        margin-top: 6px;
+      }
+      .sync::before {
+        content: "";
+        display: inline-block;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #17c964;
+        margin-right: 8px;
+        vertical-align: 1px;
+      }
+      .sync.stale::before { background: #b00020; }
       .grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
@@ -296,6 +316,7 @@
       <h2>Banner Maker</h2>
       <p class="step">Connect wallet &middot; pick your Jean Phil &middot; 3 free banners per day</p>
       <button class="btn" id="connectBtn">Connect Wallet</button>
+      <p class="sync" id="sync"></p>
       <p class="status" id="status"></p>
       <div class="grid" id="grid"></div>
       <button class="btn" id="genBtn" style="display:none">Generate My Banner</button>
@@ -390,6 +411,31 @@
         if (!r.ok) throw new Error(data.error || ("HTTP " + r.status));
         return data;
       }
+
+      // Ownership-index freshness badge: green dot + "Index synced" when the
+      // hourly cron is current, red when the index is lagging or errored.
+      (async function refreshSyncBadge() {
+        const el = $("sync");
+        try {
+          const s = await api("/api/status", {});
+          if (!s.head) {
+            el.textContent = "Index syncing…";
+            el.classList.add("stale");
+            return;
+          }
+          const ageMin = s.updatedAt ? Math.round((Date.now() - s.updatedAt) / 60000) : null;
+          const ago = ageMin == null ? "" : ageMin < 1 ? " · just now" : ageMin < 60 ? " · " + ageMin + " min ago" : " · " + Math.round(ageMin / 60) + " h ago";
+          if (s.stale || (ageMin != null && ageMin > 180)) {
+            el.textContent = "Index catching up" + ago;
+            el.classList.add("stale");
+          } else {
+            el.textContent = "Index synced" + ago;
+          }
+        } catch (e) {
+          el.textContent = "";
+        }
+        setTimeout(refreshSyncBadge, 5 * 60 * 1000);
+      })();
 
       // WalletConnect for mobile + all popular EVM wallets.
       // We only READ data, so the chain the wallet is on doesn't matter —

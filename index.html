@@ -162,6 +162,7 @@
         width: 100%;
       }
       .grid .cell {
+        position: relative;
         border: 2px solid #000000;
         border-radius: 8px;
         overflow: hidden;
@@ -181,6 +182,31 @@
         padding: 4px 2px;
         background: #000000;
         color: #ffffff;
+      }
+      .grid .cell .cell-refresh {
+        position: absolute;
+        top: 6px;
+        right: 6px;
+        width: 26px;
+        height: 26px;
+        border: 2px solid #000;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.92);
+        color: #000;
+        font-size: 15px;
+        line-height: 1;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.15s ease, background 0.15s ease, color 0.15s ease;
+      }
+      .grid .cell:hover .cell-refresh { opacity: 1; }
+      .grid .cell .cell-refresh:hover { background: #000; color: #fff; }
+      .grid .cell .cell-refresh:disabled { opacity: 0.4; cursor: default; }
+      @media (hover: none) {
+        .grid .cell .cell-refresh { opacity: 0.85; }
       }
       .result { display: flex; flex-direction: column; align-items: center; gap: 18px; width: 100%; }
       .result img.banner {
@@ -600,17 +626,54 @@
           tokens.forEach((t) => {
             const cell = document.createElement("div");
             cell.className = "cell";
+            const img = document.createElement("img");
+            img.alt = t.name;
+            img.loading = "lazy";
             if (t.imageIpfs && t.imageIpfs.startsWith("ipfs://")) {
-              const img = document.createElement("img");
-              img.alt = t.name;
-              img.loading = "lazy";
               loadNftImage(img, t.imageIpfs.slice(7), t.tokenId);
-              cell.appendChild(img);
+            } else if (t.imageUrl) {
+              // direct URL (OpenSea CDN override) — CDN sends CORS *, canvas stays clean
+              img.crossOrigin = "anonymous";
+              img.src = t.imageUrl;
+              img.onerror = () => {
+                img.src = "data:image/svg+xml;utf8," + encodeURIComponent(
+                  '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400">' +
+                  '<rect width="400" height="400" fill="#141414"/>' +
+                  '<text x="200" y="215" font-family="monospace" font-size="52" fill="#ffffff" text-anchor="middle">#' + t.tokenId + '</text></svg>');
+              };
             }
+            cell.appendChild(img);
             const cap = document.createElement("div");
             cap.className = "cap";
             cap.textContent = "#" + t.tokenId;
             cell.appendChild(cap);
+            // let a holder re-pull the image from OpenSea after a Studio edit
+            const re = document.createElement("button");
+            re.className = "cell-refresh";
+            re.title = "Refresh image from OpenSea (after a Studio edit)";
+            re.textContent = "\u21BB";
+            re.onclick = async (ev) => {
+              ev.stopPropagation();
+              re.disabled = true;
+              try {
+                const res = await api("/api/refresh_meta", { tokenIds: [Number(t.tokenId)] });
+                const ok = res.results && res.results[0] && res.results[0].ok;
+                if (ok && res.results[0].image) {
+                  const url = res.results[0].image;
+                  imgUrlCache.clear();
+                  if (url.startsWith("ipfs://")) loadNftImage(img, url.slice(7), t.tokenId);
+                  else { img.crossOrigin = "anonymous"; img.src = url; }
+                  setStatus("Image for #" + t.tokenId + " refreshed from OpenSea.");
+                } else {
+                  setStatus("Refresh failed for #" + t.tokenId + " — try again in a minute.", true);
+                }
+              } catch (e2) {
+                setStatus("Refresh failed: " + e2.message, true);
+              } finally {
+                setTimeout(() => { re.disabled = false; }, 20000);
+              }
+            };
+            cell.appendChild(re);
             cell.onclick = () => {
               grid.querySelectorAll(".cell").forEach((c) => c.classList.remove("selected"));
               cell.classList.add("selected");

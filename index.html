@@ -4,6 +4,15 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>JEAN PHIL</title>
+    <meta name="description" content="Jean Phil NFT — turn your Jean Phil into a Twitter banner. Banner Maker, community gallery, holder chats." />
+    <meta property="og:title" content="JEAN PHIL" />
+    <meta property="og:description" content="Turn your Jean Phil NFT into a Twitter banner — 3 free per day." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://jeanphil.art/" />
+    <meta property="og:image" content="https://jeanphil.art/og.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="JEAN PHIL" />
+    <meta name="twitter:description" content="Turn your Jean Phil NFT into a Twitter banner — 3 free per day." />
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
       html, body {
@@ -594,6 +603,7 @@
             if (t.imageIpfs && t.imageIpfs.startsWith("ipfs://")) {
               const img = document.createElement("img");
               img.alt = t.name;
+              img.loading = "lazy";
               loadNftImage(img, t.imageIpfs.slice(7), t.tokenId);
               cell.appendChild(img);
             }
@@ -689,6 +699,8 @@
           result.innerHTML = "";
           if (String(e.message).startsWith("daily_limit")) {
             setStatus("Daily limit reached — 3 free banners per day per wallet. Come back tomorrow.", true);
+          } else if (String(e.message).startsWith("global_daily_limit")) {
+            setStatus("The service is at capacity for today — please come back tomorrow.", true);
           } else {
             setStatus("Generation failed: " + e.message, true);
           }

@@ -81,46 +81,56 @@
         background: #0c8a45;
         border-color: #0c8a45;
       }
-      .soon {
-        font-family: 'Courier New', monospace;
-        font-size: 12px;
-        letter-spacing: 0.4em;
-        text-transform: uppercase;
+      /* ---- OG limited event ---- */
+      .og-event {
+        display: flex; flex-direction: column; align-items: center; gap: 14px;
+        width: 100%; max-width: 860px;
+        border-top: 2px solid #000000; padding-top: 38px;
       }
-      .og {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 14px;
-        text-decoration: none;
-        color: #000000;
+      .og-badge {
+        background: #000000; color: #ffffff;
+        font-family: 'Courier New', monospace; font-size: 11px;
+        letter-spacing: 0.34em; text-transform: uppercase;
+        padding: 7px 18px 8px; border-radius: 999px;
+      }
+      .og-h { font-size: clamp(20px, 3.4vw, 28px); letter-spacing: 0.16em; text-transform: uppercase; margin: 0; }
+      .og-desc {
+        font-family: 'Courier New', monospace; font-size: 12px;
+        letter-spacing: 0.06em; color: rgba(0,0,0,0.6);
+        text-align: center; max-width: 540px; line-height: 1.8; margin: 0;
+      }
+      .og-card {
+        display: block; text-decoration: none; color: #000000;
         transition: transform 0.15s ease;
       }
-      .og:hover { transform: translateY(-3px); }
-      .og .og-frame {
+      .og-card:hover { transform: translateY(-3px); }
+      .og-card .og-frame {
         position: relative;
-        width: 240px;
-        height: 240px;
-        border: 3px solid #000000;
-        border-radius: 10px;
+        width: 240px; height: 240px;
+        border: 3px solid #000000; border-radius: 10px;
         overflow: hidden;
-        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
-        transition: box-shadow 0.15s ease;
+        animation: ogpulse 2.6s ease-in-out infinite;
       }
-      .og .og-frame img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.2s ease; }
-      .og:hover .og-frame { box-shadow: 0 14px 44px rgba(0, 0, 0, 0.32); }
-      .og:hover .og-frame img { transform: scale(1.05); }
-      .og .og-cta {
+      @keyframes ogpulse {
+        0%, 100% { box-shadow: 0 8px 26px rgba(0,0,0,0.20); }
+        50% { box-shadow: 0 10px 48px rgba(0,0,0,0.48); }
+      }
+      .og-card .og-frame img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.2s ease; }
+      .og-card:hover .og-frame img { transform: scale(1.05); }
+      .og-card .og-cta {
         position: absolute; left: 0; right: 0; bottom: 0;
         background: #000000; color: #ffffff;
         font-size: 12px; font-weight: bold; letter-spacing: 0.22em;
         text-transform: uppercase; text-align: center; padding: 10px 0 11px;
       }
-      .og .og-title { font-size: 17px; font-weight: bold; letter-spacing: 0.18em; text-transform: uppercase; }
-      .og .og-sub {
-        font-family: 'Courier New', monospace; font-size: 12px;
-        letter-spacing: 0.28em; text-transform: uppercase; color: rgba(0,0,0,0.65);
+      .og-browse {
+        background: #ffffff; color: #000000;
+        border: 2px solid #000000; border-radius: 999px;
+        padding: 11px 28px; cursor: pointer;
+        font-size: 12px; font-weight: bold; letter-spacing: 0.24em; text-transform: uppercase;
+        transition: background 0.15s ease, color 0.15s ease;
       }
+      .og-browse:hover { background: #000000; color: #ffffff; }
       .buttons { display: flex; gap: 18px; flex-wrap: wrap; justify-content: center; }
 
       /* ---- Banner Maker ---- */
@@ -154,6 +164,24 @@
         text-align: center;
         min-height: 18px;
       }
+      .tools { display: flex; gap: 48px; width: 100%; align-items: flex-start; }
+      .tool { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 16px; }
+      .tool h3 { font-size: 17px; letter-spacing: 0.22em; text-transform: uppercase; margin: 0; }
+      .tool-sub {
+        font-family: 'Courier New', monospace; font-size: 11px;
+        letter-spacing: 0.12em; text-transform: uppercase;
+        color: rgba(0,0,0,0.55); text-align: center; line-height: 1.8; margin: 0;
+      }
+      .tinput {
+        width: 100%; max-width: 340px;
+        border: 2px solid #000000; border-radius: 10px;
+        background: #ffffff; color: #000000;
+        padding: 13px 16px; outline: none;
+        font-family: 'Courier New', monospace; font-size: 15px;
+        letter-spacing: 0.18em; text-transform: uppercase; text-align: center;
+      }
+      .tinput:focus { box-shadow: 0 0 0 3px rgba(0,0,0,0.14); }
+      @media (max-width: 720px) { .tools { flex-direction: column; } }
       .status.err { color: #b00020; }
       .sync {
         font-family: 'Courier New', monospace;
@@ -340,15 +368,6 @@
     </style>
   </head>
   <body>
-    <a class="og" href="https://opensea.io/collection/og-jean-phil" target="_blank" rel="noopener">
-      <span class="og-frame">
-        <img src="assets/og-v2.jpg" alt="OG Jean Phil" />
-        <span class="og-cta">View on OpenSea &#8599;</span>
-      </span>
-      <span class="og-title">&#123;OG&#125; Jean Phil</span>
-      <span class="og-sub">Limited editions for OG</span>
-    </a>
-
     <div class="buttons">
       <a class="btn" href="https://x.com/jeanphil_nft" target="_blank" rel="noopener">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.9 1.15h3.68l-8.04 9.19L24 22.85h-7.41l-5.8-7.58-6.64 7.58H.47l8.6-9.83L0 1.15h7.59l5.24 6.93 6.07-6.93Zm-1.29 19.5h2.04L6.49 3.24H4.3l13.31 17.41Z"/></svg>
@@ -370,22 +389,49 @@
       </a>
     </div>
 
-    <p class="soon">Full site coming soon</p>
+    <section class="og-event">
+      <span class="og-badge">Limited Event</span>
+      <h2 class="og-h">&#123;OG&#125; Jean Phil</h2>
+      <p class="og-desc">
+        A separate limited-edition art drop &mdash; one-of-one event pieces.
+        Not part of the main 2222 collection; each piece exists only for this event.
+      </p>
+      <a class="og-card" href="https://opensea.io/collection/og-jean-phil" target="_blank" rel="noopener">
+        <span class="og-frame">
+          <img src="assets/og-v2.jpg" alt="OG Jean Phil" />
+          <span class="og-cta">Open the collection &#8599;</span>
+        </span>
+      </a>
+      <button class="og-browse" id="ogBrowse" type="button">Browse the drop &#8594;</button>
+    </section>
 
     <section class="maker">
-      <h2>Banner Maker</h2>
-      <p class="step">Connect wallet &middot; pick your Jean Phil &middot; 3 free banners per day</p>
+      <p class="step">Connect wallet &middot; pick your Jean Phil &middot; generate</p>
       <button class="btn" id="connectBtn">Connect Wallet</button>
       <p class="sync" id="sync"></p>
       <p class="status" id="status"></p>
       <div class="grid" id="grid"></div>
-      <button class="btn" id="genBtn" style="display:none">Generate My Banner</button>
-      <div class="result" id="result"></div>
-      <p class="hint" id="hint" style="display:none">
-        The post text is pre-filled. Press Copy Image, then paste the banner
-        straight into your post (Ctrl+V / long-press) &mdash; X doesn&rsquo;t let
-        websites attach images automatically. Crop it however you like.
-      </p>
+      <div class="tools">
+        <div class="tool">
+          <h3>Banner Maker</h3>
+          <p class="tool-sub">Your Jean Phil becomes a Twitter banner &middot; 3 free per day</p>
+          <button class="btn" id="genBtn" style="display:none">Generate My Banner</button>
+          <div class="result" id="result"></div>
+          <p class="hint" id="hint" style="display:none">
+            The post text is pre-filled. Press Copy Image, then paste the banner
+            straight into your post (Ctrl+V / long-press) &mdash; X doesn&rsquo;t let
+            websites attach images automatically. Crop it however you like.
+          </p>
+        </div>
+        <div class="tool">
+          <h3>Text on me</h3>
+          <p class="tool-sub">Write anything across your Jean Phil&rsquo;s face &middot; 1 free per day</p>
+          <input class="tinput" id="textInput" maxlength="40" placeholder="WRITE ANYTHING" autocomplete="off" />
+          <button class="btn" id="textBtn" disabled>Write It</button>
+          <p class="status" id="textStatus"></p>
+          <div class="result" id="textResult"></div>
+        </div>
+      </div>
     </section>
 
     <section class="maker" id="gallery" style="display:none">
@@ -822,6 +868,90 @@
       connectBtn.onclick = connect;
       genBtn.onclick = generate;
 
+      // ---- Text on me ----
+      const textInput = $("textInput"), textBtn = $("textBtn"), textStatus = $("textStatus"), textResult = $("textResult");
+      let textGenerated = null;
+      function setTextStatus(m, isErr) {
+        textStatus.textContent = m;
+        textStatus.className = "status" + (isErr ? " err" : "");
+      }
+      textInput.addEventListener("input", () => { textBtn.disabled = !textInput.value.trim(); });
+      textBtn.onclick = async () => {
+        const text = textInput.value.trim();
+        if (!text) return;
+        if (!selectedTokenId || !selected) {
+          setTextStatus("Pick one of your Jean Phils above first.", true);
+          return;
+        }
+        textBtn.disabled = true;
+        setTextStatus("Writing it on your Jean Phil…");
+        try {
+          await selected.decode();
+          const c = document.createElement("canvas");
+          c.width = selected.naturalWidth;
+          c.height = selected.naturalHeight;
+          c.getContext("2d").drawImage(selected, 0, 0);
+          const out = await api("/api/text_on_me", {
+            image: c.toDataURL("image/png"),
+            tokenId: selectedTokenId,
+            address: connectedAddress,
+            text,
+          });
+          textGenerated = out.image;
+          textResult.innerHTML = "";
+          const img = document.createElement("img");
+          img.className = "banner";
+          img.src = textGenerated;
+          textResult.appendChild(img);
+          const row = document.createElement("div");
+          row.className = "buttons";
+          const dl = document.createElement("a");
+          dl.className = "btn";
+          dl.textContent = "Download";
+          dl.download = "jeanphil-text.png";
+          dl.href = textGenerated;
+          const copy = document.createElement("button");
+          copy.className = "btn";
+          copy.textContent = "Copy Image";
+          copy.onclick = async () => {
+            try {
+              const blob = await (await fetch(textGenerated)).blob();
+              await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+              setTextStatus("Copied — paste it anywhere (Ctrl+V).");
+            } catch (e) {
+              setTextStatus("Copy failed — use Download instead.", true);
+            }
+          };
+          const tweet = document.createElement("a");
+          tweet.className = "btn";
+          const t = encodeURIComponent('"' + text + '" — written on my Jean Phil \u{1F440} @jeanphil_nft #JeanPhil');
+          tweet.href = "https://x.com/intent/post?text=" + t;
+          tweet.target = "_blank";
+          tweet.rel = "noopener";
+          tweet.textContent = "Post on X";
+          row.appendChild(dl);
+          row.appendChild(copy);
+          row.appendChild(tweet);
+          textResult.appendChild(row);
+          setTextStatus("Done.  ·  " + out.remaining + " of 1 free Text on me left today.");
+        } catch (e) {
+          const m = String(e.message || "");
+          if (m.startsWith("daily_limit")) {
+            setTextStatus("Daily limit reached — 1 free Text on me per day. Come back tomorrow.", true);
+          } else if (m.startsWith("text_flagged")) {
+            setTextStatus("This text is not allowed — keep it friendly.", true);
+          } else if (m.startsWith("bad_text")) {
+            setTextStatus("Text is too long or has unsupported symbols (letters, numbers and basic punctuation only).", true);
+          } else if (m.startsWith("global_daily_limit")) {
+            setTextStatus("The service is at capacity for today — please come back tomorrow.", true);
+          } else {
+            setTextStatus("Generation failed: " + e.message, true);
+          }
+        } finally {
+          textBtn.disabled = !textInput.value.trim();
+        }
+      };
+
       // ---- Lightbox ----
       const lbOverlay = $("lbOverlay"), lbImg = $("lbImg");
       let lbList = [], lbIdx = 0;
@@ -850,6 +980,15 @@
         else if (e.key === "ArrowRight") showLb(lbIdx + 1);
         else if (e.key === "ArrowLeft") showLb(lbIdx - 1);
       });
+
+      // ---- OG limited event: browse the drop (all pieces of the collection) ----
+      const OG_IMGS = [
+        "https://i2c.seadn.io/robinhood/0xb58956ffa2b8b9fdb28580ba8cee3f936ba8126d/14e2f6325158f03bdf44ce052f5cd8/2414e2f6325158f03bdf44ce052f5cd8.png?w=1000",
+        "https://i2c.seadn.io/robinhood/0xb58956ffa2b8b9fdb28580ba8cee3f936ba8126d/61d80f003a458505f5f71cfd69d657/0761d80f003a458505f5f71cfd69d657.png?w=1000",
+        "https://i2c.seadn.io/robinhood/0xb58956ffa2b8b9fdb28580ba8cee3f936ba8126d/a88f9a97e7a1f6440cc8500fbeea35/aea88f9a97e7a1f6440cc8500fbeea35.png?w=1000",
+        "https://i2c.seadn.io/robinhood/0xb58956ffa2b8b9fdb28580ba8cee3f936ba8126d/c641feb2f35e45e5bd3022b3b51bb9/82c641feb2f35e45e5bd3022b3b51bb9.png?w=1000",
+      ];
+      $("ogBrowse").addEventListener("click", () => openLightbox(OG_IMGS[0], OG_IMGS, 0));
 
       // ---- Community gallery (previews committed to the repo) ----
       async function loadGallery() {

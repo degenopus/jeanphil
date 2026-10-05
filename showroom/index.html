@@ -41,19 +41,6 @@
     </div>
     <script>
     (function () {
-      // TEMP dev preview hook — removed after visual check
-      window.addEventListener("error", function (e) { sessionStorage.setItem("jp_err", String(e.message || e.error)); });
-      window.addEventListener("unhandledrejection", function (e) { sessionStorage.setItem("jp_err", "rej: " + String(e.reason && e.reason.message || e.reason)); });
-      var __dev = new URLSearchParams(location.search).get("jp_dev");
-      if (__dev) {
-        sessionStorage.removeItem("jp_err");
-        sessionStorage.setItem("jp_holder", "0x0000000000000000000000000000000000000001");
-        sessionStorage.setItem("jp_nft_id", "565");
-        sessionStorage.setItem("jp_nft_img", __dev === "2" ? "https://jeanphil.art/nfts/DOESNOTEXIST.png" : "https://jeanphil.art/showroom/nfts/0777.png");
-        location.href = location.pathname;
-        return;
-      }
-      if (sessionStorage.getItem("jp_err")) { document.title = "ERR " + sessionStorage.getItem("jp_err").slice(0, 120); }
       var BUNDLE = "./assets/index-rqZhcz-m.js";
       var API = "https://jeanphil-banner.jeanphilnft.workers.dev";
       var gate = document.getElementById("gate");

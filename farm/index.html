@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="ru">
+<html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -146,39 +146,39 @@
   <body>
     <span class="tag">private test — noindex</span>
     <h1>Jean Phil Farmer</h1>
-    <div class="sub">личный агент твоего NFT &middot; Robinhood Chain</div>
+    <div class="sub">your NFT's personal agent &middot; Robinhood Chain</div>
 
     <div class="card" id="card">
       <img class="avatar hidden" id="avatar" alt="Jean Phil" />
 
       <div class="row">
-        <div class="label">Твой кошелёк</div>
-        <div class="value mono" id="wallet">не подключён</div>
+        <div class="label">Your wallet</div>
+        <div class="value mono" id="wallet">not connected</div>
       </div>
 
-      <button class="btn" id="connectBtn">Подключить кошелёк</button>
+      <button class="btn" id="connectBtn">Connect wallet</button>
 
       <div class="row hidden" id="tokenRow">
-        <div class="label">Твой Jean Phil (token ID)</div>
-        <input id="tokenId" type="number" min="1" max="2222" placeholder="например, 1547" />
-        <button class="btn ghost" id="checkBtn">Проверить владение</button>
+        <div class="label">Your Jean Phil (token ID)</div>
+        <input id="tokenId" type="number" min="1" max="2222" placeholder="e.g. 1547" />
+        <button class="btn ghost" id="checkBtn">Verify ownership</button>
       </div>
 
       <div class="status" id="status"></div>
 
       <div class="row hidden" id="agentRow">
-        <div class="label">Кошелёк агента (ERC-6551)</div>
+        <div class="label">Agent wallet (ERC-6551)</div>
         <div class="value mono" id="agentAddr">—</div>
-        <div class="label">Статус</div>
+        <div class="label">Status</div>
         <div class="value" id="agentState">—</div>
-        <div class="label">Баланс агента</div>
+        <div class="label">Agent balance</div>
         <div class="value mono" id="agentBal">—</div>
         <div class="links">
           <a id="scanLink" target="_blank" rel="noopener">Blockscout</a>
           <a id="osLink" target="_blank" rel="noopener">OpenSea</a>
           <a id="tbLink" target="_blank" rel="noopener">Tokenbound</a>
         </div>
-        <button class="btn accent hidden" id="activateBtn">Активировать фермера</button>
+        <button class="btn accent hidden" id="activateBtn">Activate farmer</button>
       </div>
     </div>
 
@@ -232,9 +232,9 @@
       }
 
       async function connect() {
-        if (!window.ethereum) { status('Кошелёк не найден — нужен MetaMask или другой EIP-1193 кошелёк.', 'err'); return; }
+        if (!window.ethereum) { status('No wallet found — you need MetaMask or another EIP-1193 wallet.', 'err'); return; }
         try {
-          status('Подключаю…');
+          status('Connecting…');
           await window.ethereum.request({ method: 'eth_requestAccounts' });
           await ensureChain();
           provider = new ethers.BrowserProvider(window.ethereum);
@@ -242,12 +242,12 @@
           userAddr = await signer.getAddress();
           readOnly = new ethers.JsonRpcProvider(RPC);
           $('wallet').textContent = userAddr;
-          $('connectBtn').textContent = 'Подключено';
+          $('connectBtn').textContent = 'Connected';
           $('connectBtn').disabled = true;
           $('tokenRow').classList.remove('hidden');
-          status('Кошелёк подключён. Введи ID своего Jean Phil.', 'ok');
+          status('Wallet connected. Enter your Jean Phil ID.', 'ok');
         } catch (e) {
-          status('Не получилось подключиться: ' + (e.shortMessage || e.message), 'err');
+          status('Connection failed: ' + (e.shortMessage || e.message), 'err');
         }
       }
 
@@ -267,20 +267,20 @@
           }
           if (meta.startsWith('ipfs://')) meta = 'https://ipfs.io/ipfs/' + meta.slice(7);
           if (meta) { $('avatar').src = meta; $('avatar').classList.remove('hidden'); }
-        } catch (e) { /* аватарка — опция, не критично */ }
+        } catch (e) { /* avatar is optional, not critical */ }
       }
 
       let current = { tokenId: null, agent: null };
 
       async function checkToken() {
         const tokenId = parseInt($('tokenId').value, 10);
-        if (!tokenId || tokenId < 1 || tokenId > 2222) { status('Введи ID от 1 до 2222.', 'err'); return; }
+        if (!tokenId || tokenId < 1 || tokenId > 2222) { status('Enter an ID from 1 to 2222.', 'err'); return; }
         try {
-          status('Проверяю владение Jean Phil #' + tokenId + '…');
+          status('Checking ownership of Jean Phil #' + tokenId + '…');
           const nft = new ethers.Contract(NFT, ERC721, readOnly);
           const owner = await nft.ownerOf(tokenId);
           if (owner.toLowerCase() !== userAddr.toLowerCase()) {
-            status('Этот Jean Phil #' + tokenId + ' принадлежит ' + owner.slice(0, 8) + '…' + owner.slice(-4) + ', а не тебе.', 'err');
+            status('This Jean Phil #' + tokenId + ' belongs to ' + owner.slice(0, 8) + '…' + owner.slice(-4) + ', not you.', 'err');
             $('agentRow').classList.add('hidden');
             return;
           }
@@ -294,16 +294,16 @@
           $('agentRow').classList.remove('hidden');
           loadAvatar(tokenId);
           await refreshAgent();
-          status('Jean Phil #' + tokenId + ' — твой. Агент рассчитан.', 'ok');
+          status('Jean Phil #' + tokenId + ' is yours. Agent computed.', 'ok');
         } catch (e) {
-          status('Ошибка: ' + (e.shortMessage || e.message), 'err');
+          status('Error: ' + (e.shortMessage || e.message), 'err');
         }
       }
 
       async function refreshAgent() {
         const code = await readOnly.getCode(current.agent);
         const active = code && code !== '0x';
-        $('agentState').textContent = active ? 'АКТИВЕН — фермер работает' : 'не активирован';
+        $('agentState').textContent = active ? 'ACTIVE — farmer at work' : 'not activated';
         $('agentState').style.color = active ? '#17c964' : '#ffd60a';
         const bal = await readOnly.getBalance(current.agent);
         $('agentBal').textContent = ethers.formatEther(bal) + ' ETH';
@@ -313,20 +313,20 @@
 
       async function activate() {
         try {
-          status('Отправляю транзакцию активации… подтверди в кошельке.');
+          status('Sending activation transaction… confirm in your wallet.');
           $('activateBtn').disabled = true;
           const reg = new ethers.Contract(REGISTRY, REG, signer);
           const tx = await reg.createAccount(IMPL, SALT, CHAIN_ID, NFT, current.tokenId);
-          status('Транзакция отправлена: ' + tx.hash.slice(0, 18) + '… жду подтверждение.');
+          status('Transaction sent: ' + tx.hash.slice(0, 18) + '… waiting for confirmation.');
           await tx.wait();
           let active = false;
           for (let i = 0; i < 10 && !active; i++) {
             await new Promise((r) => setTimeout(r, 3000));
             active = await refreshAgent();
           }
-          status(active ? 'Фермер активирован. Кошелёк Jean Phil #' + current.tokenId + ' живёт своей жизнью.' : 'Транзакция прошла, но код не появился — проверь в Blockscout.', active ? 'ok' : 'err');
+          status(active ? 'Farmer activated. The wallet of Jean Phil #' + current.tokenId + ' now lives its own life.' : 'Transaction went through, but no code appeared — check Blockscout.', active ? 'ok' : 'err');
         } catch (e) {
-          status('Активация не прошла: ' + (e.shortMessage || e.message), 'err');
+          status('Activation failed: ' + (e.shortMessage || e.message), 'err');
         } finally {
           $('activateBtn').disabled = false;
         }

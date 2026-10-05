@@ -41,6 +41,15 @@
     </div>
     <script>
     (function () {
+      // TEMP dev preview hook — removed after visual check
+      var __dev = new URLSearchParams(location.search).get("jp_dev");
+      if (__dev) {
+        sessionStorage.setItem("jp_holder", "0x0000000000000000000000000000000000000001");
+        sessionStorage.setItem("jp_nft_id", "565");
+        sessionStorage.setItem("jp_nft_img", "https://jeanphil.art/nfts/0001.png");
+        location.href = location.pathname;
+        return;
+      }
       var BUNDLE = "./assets/index-rqZhcz-m.js";
       var API = "https://jeanphil-banner.jeanphilnft.workers.dev";
       var gate = document.getElementById("gate");

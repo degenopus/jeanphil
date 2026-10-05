@@ -849,7 +849,7 @@
           $("gallery").style.display = "flex";
           const g = $("ggrid");
           g.innerHTML = "";
-          items.slice(0, 24).forEach((it, i) => {
+          items.forEach((it, i) => {
             const a = document.createElement("a");
             a.className = "gcell";
             a.href = "gallery/" + it.f;
@@ -861,7 +861,7 @@
             a.appendChild(im);
             a.addEventListener("click", (e) => {
               e.preventDefault();
-              const full = items.slice(0, 24).map((x) => "gallery/" + (x.full || x.f));
+              const full = items.map((x) => "gallery/" + (x.full || x.f));
               openLightbox(full[i], full, i);
             });
             g.appendChild(a);

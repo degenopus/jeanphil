@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JEAN PHIL — FARMER (test)</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <meta name="description" content="private test" />
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        background: #0e0e0e;
+        color: #f2f2f2;
+        font-family: Arial, Helvetica, sans-serif;
+        min-height: 100vh;
+      }
+      body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 48px 16px 80px;
+        gap: 28px;
+      }
+      .mono { font-family: 'Courier New', monospace; }
+      h1 {
+        font-size: 34px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+      }
+      .sub {
+        color: #9a9a9a;
+        font-size: 14px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+      }
+      .tag {
+        font-size: 11px;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: #0e0e0e;
+        background: #ffd60a;
+        padding: 4px 10px;
+        border-radius: 3px;
+        font-weight: bold;
+      }
+      .card {
+        width: 100%;
+        max-width: 560px;
+        background: #161616;
+        border: 1px solid #2c2c2c;
+        border-radius: 10px;
+        padding: 28px;
+        display: flex;
+        flex-direction: column;
+        gap: 18px;
+      }
+      .avatar {
+        width: 160px;
+        height: 160px;
+        border-radius: 10px;
+        object-fit: cover;
+        border: 2px solid #2c2c2c;
+        align-self: center;
+        background: #1f1f1f;
+      }
+      .row {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .label {
+        font-size: 11px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: #8a8a8a;
+      }
+      .value { font-size: 15px; word-break: break-all; }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        font-size: 15px;
+        font-weight: bold;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        padding: 15px 30px;
+        border-radius: 6px;
+        border: 2px solid #f2f2f2;
+        color: #0e0e0e;
+        background: #f2f2f2;
+        cursor: pointer;
+        transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+        width: 100%;
+      }
+      .btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(255, 255, 255, 0.15); }
+      .btn:disabled { opacity: 0.35; pointer-events: none; }
+      .btn.ghost {
+        background: transparent;
+        color: #f2f2f2;
+      }
+      .btn.accent {
+        background: #17c964;
+        border-color: #17c964;
+      }
+      .btn.accent:hover { box-shadow: 0 6px 20px rgba(23, 201, 100, 0.4); }
+      input {
+        background: #0e0e0e;
+        border: 1px solid #2c2c2c;
+        color: #f2f2f2;
+        border-radius: 6px;
+        padding: 13px 14px;
+        font-size: 16px;
+        width: 100%;
+      }
+      input:focus { outline: none; border-color: #17c964; }
+      .status {
+        font-size: 13px;
+        line-height: 1.6;
+        color: #c9c9c9;
+        min-height: 20px;
+      }
+      .status.err { color: #ff6b6b; }
+      .status.ok { color: #17c964; }
+      .links { display: flex; gap: 10px; flex-wrap: wrap; }
+      .links a {
+        color: #8a8a8a;
+        font-size: 12px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        text-decoration: none;
+        border-bottom: 1px dashed #4a4a4a;
+      }
+      .links a:hover { color: #f2f2f2; }
+      .hidden { display: none; }
+      .foot {
+        margin-top: 12px;
+        font-size: 11px;
+        color: #555;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <span class="tag">private test — noindex</span>
+    <h1>Jean Phil Farmer</h1>
+    <div class="sub">личный агент твоего NFT &middot; Robinhood Chain</div>
+
+    <div class="card" id="card">
+      <img class="avatar hidden" id="avatar" alt="Jean Phil" />
+
+      <div class="row">
+        <div class="label">Твой кошелёк</div>
+        <div class="value mono" id="wallet">не подключён</div>
+      </div>
+
+      <button class="btn" id="connectBtn">Подключить кошелёк</button>
+
+      <div class="row hidden" id="tokenRow">
+        <div class="label">Твой Jean Phil (token ID)</div>
+        <input id="tokenId" type="number" min="1" max="2222" placeholder="например, 1547" />
+        <button class="btn ghost" id="checkBtn">Проверить владение</button>
+      </div>
+
+      <div class="status" id="status"></div>
+
+      <div class="row hidden" id="agentRow">
+        <div class="label">Кошелёк агента (ERC-6551)</div>
+        <div class="value mono" id="agentAddr">—</div>
+        <div class="label">Статус</div>
+        <div class="value" id="agentState">—</div>
+        <div class="label">Баланс агента</div>
+        <div class="value mono" id="agentBal">—</div>
+        <div class="links">
+          <a id="scanLink" target="_blank" rel="noopener">Blockscout</a>
+          <a id="osLink" target="_blank" rel="noopener">OpenSea</a>
+          <a id="tbLink" target="_blank" rel="noopener">Tokenbound</a>
+        </div>
+        <button class="btn accent hidden" id="activateBtn">Активировать фермера</button>
+      </div>
+    </div>
+
+    <div class="foot">test build &middot; farm integration pending</div>
+
+    <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.4/dist/ethers.umd.min.js"></script>
+    <script>
+      const CHAIN_ID = 4663;
+      const RPC = 'https://rpc.mainnet.chain.robinhood.com';
+      const NFT = '0x7d380a6e71945a9f4f04a3fdf92bcc84a6cb173f';
+      const REGISTRY = '0x000000006551c19487814612e58FE06813775758';
+      const IMPL = '0x2D25602551487C7f3350adD80b13D28b9b3F3e33';
+      const SALT = 0;
+
+      const ERC721 = [
+        'function ownerOf(uint256 tokenId) view returns (address)',
+        'function tokenURI(uint256 tokenId) view returns (string)',
+      ];
+      const REG = [
+        'function account(address implementation, bytes32 salt, uint256 chainId, address tokenContract, uint256 tokenId) view returns (address)',
+        'function createAccount(address implementation, bytes32 salt, uint256 chainId, address tokenContract, uint256 tokenId) payable returns (address)',
+      ];
+
+      const $ = (id) => document.getElementById(id);
+      const status = (msg, cls) => {
+        const el = $('status');
+        el.textContent = msg || '';
+        el.className = 'status' + (cls ? ' ' + cls : '');
+      };
+
+      let provider, signer, userAddr, readOnly;
+
+      async function ensureChain() {
+        const hexId = '0x' + CHAIN_ID.toString(16);
+        try {
+          await window.ethereum.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: hexId }] });
+        } catch (e) {
+          if (e.code === 4902) {
+            await window.ethereum.request({
+              method: 'wallet_addEthereumChain',
+              params: [{
+                chainId: hexId,
+                chainName: 'Robinhood Chain',
+                nativeCurrency: { name: 'ETH', symbol: 'ETH', decimals: 18 },
+                rpcUrls: [RPC],
+                blockExplorerUrls: ['https://robinhoodchain.blockscout.com'],
+              }],
+            });
+          } else throw e;
+        }
+      }
+
+      async function connect() {
+        if (!window.ethereum) { status('Кошелёк не найден — нужен MetaMask или другой EIP-1193 кошелёк.', 'err'); return; }
+        try {
+          status('Подключаю…');
+          await window.ethereum.request({ method: 'eth_requestAccounts' });
+          await ensureChain();
+          provider = new ethers.BrowserProvider(window.ethereum);
+          signer = await provider.getSigner();
+          userAddr = await signer.getAddress();
+          readOnly = new ethers.JsonRpcProvider(RPC);
+          $('wallet').textContent = userAddr;
+          $('connectBtn').textContent = 'Подключено';
+          $('connectBtn').disabled = true;
+          $('tokenRow').classList.remove('hidden');
+          status('Кошелёк подключён. Введи ID своего Jean Phil.', 'ok');
+        } catch (e) {
+          status('Не получилось подключиться: ' + (e.shortMessage || e.message), 'err');
+        }
+      }
+
+      async function loadAvatar(tokenId) {
+        try {
+          const nft = new ethers.Contract(NFT, ERC721, readOnly);
+          const uri = await nft.tokenURI(tokenId);
+          if (!uri) return;
+          let meta = uri;
+          if (uri.startsWith('ipfs://')) meta = 'https://ipfs.io/ipfs/' + uri.slice(7);
+          if (uri.startsWith('data:')) {
+            const b64 = uri.split(',')[1];
+            meta = JSON.parse(atob(b64)).image || '';
+          } else if (uri.endsWith('.json') || uri.includes('/')) {
+            const j = await (await fetch(meta)).json();
+            meta = j.image || '';
+          }
+          if (meta.startsWith('ipfs://')) meta = 'https://ipfs.io/ipfs/' + meta.slice(7);
+          if (meta) { $('avatar').src = meta; $('avatar').classList.remove('hidden'); }
+        } catch (e) { /* аватарка — опция, не критично */ }
+      }
+
+      let current = { tokenId: null, agent: null };
+
+      async function checkToken() {
+        const tokenId = parseInt($('tokenId').value, 10);
+        if (!tokenId || tokenId < 1 || tokenId > 2222) { status('Введи ID от 1 до 2222.', 'err'); return; }
+        try {
+          status('Проверяю владение Jean Phil #' + tokenId + '…');
+          const nft = new ethers.Contract(NFT, ERC721, readOnly);
+          const owner = await nft.ownerOf(tokenId);
+          if (owner.toLowerCase() !== userAddr.toLowerCase()) {
+            status('Этот Jean Phil #' + tokenId + ' принадлежит ' + owner.slice(0, 8) + '…' + owner.slice(-4) + ', а не тебе.', 'err');
+            $('agentRow').classList.add('hidden');
+            return;
+          }
+          const reg = new ethers.Contract(REGISTRY, REG, readOnly);
+          const agent = await reg.account(IMPL, SALT, CHAIN_ID, NFT, tokenId);
+          current = { tokenId, agent };
+          $('agentAddr').textContent = agent;
+          $('scanLink').href = 'https://robinhoodchain.blockscout.com/address/' + agent;
+          $('osLink').href = 'https://opensea.io/' + agent;
+          $('tbLink').href = 'https://tokenbound.org/assets/robinhood/' + NFT + '/' + tokenId;
+          $('agentRow').classList.remove('hidden');
+          loadAvatar(tokenId);
+          await refreshAgent();
+          status('Jean Phil #' + tokenId + ' — твой. Агент рассчитан.', 'ok');
+        } catch (e) {
+          status('Ошибка: ' + (e.shortMessage || e.message), 'err');
+        }
+      }
+
+      async function refreshAgent() {
+        const code = await readOnly.getCode(current.agent);
+        const active = code && code !== '0x';
+        $('agentState').textContent = active ? 'АКТИВЕН — фермер работает' : 'не активирован';
+        $('agentState').style.color = active ? '#17c964' : '#ffd60a';
+        const bal = await readOnly.getBalance(current.agent);
+        $('agentBal').textContent = ethers.formatEther(bal) + ' ETH';
+        $('activateBtn').classList.toggle('hidden', active);
+        return active;
+      }
+
+      async function activate() {
+        try {
+          status('Отправляю транзакцию активации… подтверди в кошельке.');
+          $('activateBtn').disabled = true;
+          const reg = new ethers.Contract(REGISTRY, REG, signer);
+          const tx = await reg.createAccount(IMPL, SALT, CHAIN_ID, NFT, current.tokenId);
+          status('Транзакция отправлена: ' + tx.hash.slice(0, 18) + '… жду подтверждение.');
+          await tx.wait();
+          let active = false;
+          for (let i = 0; i < 10 && !active; i++) {
+            await new Promise((r) => setTimeout(r, 3000));
+            active = await refreshAgent();
+          }
+          status(active ? 'Фермер активирован. Кошелёк Jean Phil #' + current.tokenId + ' живёт своей жизнью.' : 'Транзакция прошла, но код не появился — проверь в Blockscout.', active ? 'ok' : 'err');
+        } catch (e) {
+          status('Активация не прошла: ' + (e.shortMessage || e.message), 'err');
+        } finally {
+          $('activateBtn').disabled = false;
+        }
+      }
+
+      $('connectBtn').addEventListener('click', connect);
+      $('checkBtn').addEventListener('click', checkToken);
+      $('activateBtn').addEventListener('click', activate);
+      $('tokenId').addEventListener('keydown', (e) => { if (e.key === 'Enter') checkToken(); });
+      if (window.ethereum && window.ethereum.on) {
+        window.ethereum.on('accountsChanged', () => location.reload());
+        window.ethereum.on('chainChanged', () => location.reload());
+      }
+    </script>
+  </body>
+</html>

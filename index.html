@@ -650,6 +650,10 @@
           }
           // holder verified — this key unlocks the showroom and future holder-only features
           sessionStorage.setItem("jp_holder", address);
+          if (tokens[0] && tokens[0].imageUrl) {
+            sessionStorage.setItem("jp_nft_id", tokens[0].tokenId);
+            sessionStorage.setItem("jp_nft_img", tokens[0].imageUrl);
+          }
           holdersBtn.style.display = "inline-flex"; // holder verified — show private chat
           $("showroomBtn").style.display = "inline-flex";
           setStatus("Pick one of your Jean Phils:");

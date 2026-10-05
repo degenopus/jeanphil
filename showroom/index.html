@@ -60,8 +60,39 @@
       }
       function fail(m) { msgEl.textContent = ""; statusEl.textContent = m; statusEl.className = "err"; }
 
-      // already verified on jeanphil.art this session — walk straight in
-      if (sessionStorage.getItem("jp_holder")) { boot(); return; }
+      // already verified on jeanphil.art this session — if we don't have the
+      // holder's NFT image yet, fetch it (it goes on the showroom wall), then boot
+      function loadable(url) {
+        return new Promise(function (res) {
+          var im = new Image();
+          im.crossOrigin = "anonymous";
+          im.onload = function () { res(true); };
+          im.onerror = function () { res(false); };
+          im.src = url;
+        });
+      }
+      async function pickNft(toks) {
+        for (var i = 0; i < Math.min(toks.length, 8); i++) {
+          var t = toks[i];
+          if (t && t.imageUrl && await loadable(t.imageUrl)) return t;
+        }
+        return null;
+      }
+      function rememberNft(t) {
+        if (!t) return;
+        sessionStorage.setItem("jp_nft_id", t.tokenId);
+        sessionStorage.setItem("jp_nft_img", t.imageUrl);
+      }
+      if (sessionStorage.getItem("jp_holder")) {
+        if (sessionStorage.getItem("jp_nft_img")) { boot(); return; }
+        fetch(API + "/api/nfts", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ address: sessionStorage.getItem("jp_holder") }) })
+          .then(function (r) { return r.json(); })
+          .then(function (d) { return pickNft((d && d.tokens) || []); })
+          .then(rememberNft)
+          .catch(function () {})
+          .finally(boot);
+        return;
+      }
 
       var providers = [];
       function rank(p) {
@@ -121,6 +152,7 @@
           var toks = d.tokens || [];
           if (!toks.length) throw new Error("No Jean Phil NFT found in this wallet — you need one to enter the showroom.");
           sessionStorage.setItem("jp_holder", accs[0]);
+          rememberNft(await pickNft(toks));
           statusEl.className = "";
           statusEl.textContent = "Welcome in, holder.";
           setTimeout(boot, 450);

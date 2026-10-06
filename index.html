@@ -83,12 +83,10 @@
       }
       /* ---- OG limited event ---- */
       .og-event {
-        display: flex; flex-direction: row; align-items: center; justify-content: center;
-        gap: 56px; flex-wrap: wrap;
-        width: 100%; max-width: 900px;
-        border-top: 2px solid #000000; padding: 42px 24px;
+        display: flex; flex-direction: column; align-items: center; gap: 14px;
+        width: 100%; max-width: 860px;
+        border-top: 2px solid #000000; padding-top: 38px;
       }
-      .og-info { display: flex; flex-direction: column; align-items: flex-start; gap: 14px; max-width: 420px; }
       .og-badge {
         background: #000000; color: #ffffff;
         font-family: 'Courier New', monospace; font-size: 11px;
@@ -99,7 +97,7 @@
       .og-desc {
         font-family: 'Courier New', monospace; font-size: 12px;
         letter-spacing: 0.06em; color: rgba(0,0,0,0.6);
-        text-align: left; line-height: 1.8; margin: 0;
+        text-align: center; max-width: 540px; line-height: 1.8; margin: 0;
       }
       .og-card {
         display: block; text-decoration: none; color: #000000;
@@ -108,7 +106,7 @@
       .og-card:hover { transform: translateY(-3px); }
       .og-card .og-frame {
         position: relative;
-        width: 260px; height: 260px;
+        width: 240px; height: 240px;
         border: 3px solid #000000; border-radius: 10px;
         overflow: hidden;
         animation: ogpulse 2.6s ease-in-out infinite;
@@ -133,11 +131,6 @@
         transition: background 0.15s ease, color 0.15s ease;
       }
       .og-browse:hover { background: #000000; color: #ffffff; }
-      @media (max-width: 720px) {
-        .og-event { flex-direction: column; gap: 30px; }
-        .og-info { align-items: center; }
-        .og-desc { text-align: center; }
-      }
       .buttons { display: flex; gap: 18px; flex-wrap: wrap; justify-content: center; }
 
       /* ---- Banner Maker ---- */
@@ -396,24 +389,6 @@
       </a>
     </div>
 
-    <section class="og-event">
-      <div class="og-info">
-        <span class="og-badge">Limited Event</span>
-        <h2 class="og-h">&#123;OG&#125; Jean Phil</h2>
-        <p class="og-desc">
-          A separate limited-edition art drop &mdash; one-of-one event pieces.
-          Not part of the main 2222 collection; each piece exists only for this event.
-        </p>
-        <button class="og-browse" id="ogBrowse" type="button">Browse the drop &#8594;</button>
-      </div>
-      <a class="og-card" href="https://opensea.io/collection/og-jean-phil" target="_blank" rel="noopener">
-        <span class="og-frame">
-          <img src="assets/og-v2.jpg" alt="OG Jean Phil" />
-          <span class="og-cta">Open the collection &#8599;</span>
-        </span>
-      </a>
-    </section>
-
     <section class="maker">
       <p class="step">Connect wallet &middot; pick your Jean Phil &middot; generate</p>
       <button class="btn" id="connectBtn">Connect Wallet</button>
@@ -447,6 +422,22 @@
       <h2>Gallery</h2>
       <p class="step">Banners created by the community</p>
       <div class="ggrid" id="ggrid"></div>
+    </section>
+
+    <section class="og-event">
+      <span class="og-badge">Limited Event</span>
+      <h2 class="og-h">&#123;OG&#125; Jean Phil</h2>
+      <p class="og-desc">
+        A separate limited-edition art drop &mdash; one-of-one event pieces.
+        Not part of the main 2222 collection; each piece exists only for this event.
+      </p>
+      <a class="og-card" href="https://opensea.io/collection/og-jean-phil" target="_blank" rel="noopener">
+        <span class="og-frame">
+          <img src="assets/og-v2.jpg" alt="OG Jean Phil" />
+          <span class="og-cta">Open the collection &#8599;</span>
+        </span>
+      </a>
+      <button class="og-browse" id="ogBrowse" type="button">Browse the drop &#8594;</button>
     </section>
 
     <div class="wc-overlay" id="wcOverlay">

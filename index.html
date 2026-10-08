@@ -127,6 +127,7 @@
         align-items: center;
         gap: 28px;
       }
+      #gallery { max-width: 1100px; }
       .maker h2 {
         font-size: clamp(22px, 4vw, 34px);
         letter-spacing: 0.14em;
@@ -290,12 +291,23 @@
       }
 
       /* ---- Community gallery ---- */
+      .gcols {
+        display: flex; gap: 40px; align-items: flex-start; justify-content: center;
+        width: 100%; max-width: 1100px; flex-wrap: wrap;
+      }
+      .gcol { flex: 1 1 380px; min-width: 300px; display: flex; flex-direction: column; gap: 12px; }
+      .gcol-title {
+        font-family: 'Courier New', monospace; font-size: 12px;
+        letter-spacing: 0.3em; text-transform: uppercase;
+        color: rgba(0,0,0,0.55); margin: 0; text-align: center;
+      }
       .ggrid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
         gap: 12px;
         width: 100%;
       }
+      .ggrid.sq { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
       .gcell {
         border: 2px solid #000000; border-radius: 8px;
         overflow: hidden; display: block;
@@ -303,6 +315,7 @@
       }
       .gcell:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.25); }
       .gcell img { width: 100%; display: block; aspect-ratio: 3 / 1; object-fit: cover; }
+      .ggrid.sq .gcell img { aspect-ratio: 1 / 1; }
 
       /* ---- Lightbox ---- */
       .lb-overlay {
@@ -402,9 +415,18 @@
     </section>
 
     <section class="maker" id="gallery" style="display:none">
-      <h2>Gallery</h2>
-      <p class="step">Banners created by the community</p>
-      <div class="ggrid" id="ggrid"></div>
+      <h2>Community Gallery</h2>
+      <p class="step">Made by holders with the tools above</p>
+      <div class="gcols">
+        <div class="gcol" id="gcolBanners">
+          <p class="gcol-title">Banners</p>
+          <div class="ggrid" id="ggrid"></div>
+        </div>
+        <div class="gcol" id="gcolText" style="display:none">
+          <p class="gcol-title">Text on me</p>
+          <div class="ggrid sq" id="tggrid"></div>
+        </div>
+      </div>
     </section>
 
     <a class="og" href="https://opensea.io/collection/og-jean-phil" target="_blank" rel="noopener">
@@ -907,6 +929,23 @@
           row.appendChild(tweet);
           textResult.appendChild(row);
           setTextStatus("Done.  ·  " + out.remaining + " of 1 free Text on me left today.");
+          // thumb (square) + full-resolution portrait -> Text on me gallery (fire and forget)
+          try {
+            await img.decode();
+            const th = document.createElement("canvas");
+            th.width = 384; th.height = 384;
+            th.getContext("2d").drawImage(img, 0, 0, 384, 384);
+            const pv = document.createElement("canvas");
+            pv.width = img.naturalWidth; pv.height = img.naturalHeight;
+            pv.getContext("2d").drawImage(img, 0, 0);
+            api("/api/text_gallery", {
+              image: th.toDataURL("image/jpeg", 0.8),
+              full: pv.toDataURL("image/jpeg", 0.85),
+              tokenId: selectedTokenId,
+              address: connectedAddress,
+              galleryToken: out.galleryToken,
+            }).then(() => loadGalleryInto("gallery_text", "tggrid", "gcolText")).catch(() => {});
+          } catch (e) {}
         } catch (e) {
           const m = String(e.message || "");
           if (m.startsWith("daily_limit")) {
@@ -954,34 +993,39 @@
         else if (e.key === "ArrowLeft") showLb(lbIdx - 1);
       });
 
-      // ---- Community gallery (previews committed to the repo) ----
-      async function loadGallery() {
+      // ---- Community galleries (previews committed to the repo) ----
+      async function loadGalleryInto(folder, gridId, colId) {
         try {
-          const r = await fetch("gallery/index.json?_=" + Date.now());
+          const r = await fetch(folder + "/index.json?_=" + Date.now());
           if (!r.ok) return;
           const items = await r.json();
           if (!Array.isArray(items) || !items.length) return;
           $("gallery").style.display = "flex";
-          const g = $("ggrid");
+          if (colId) $(colId).style.display = "flex";
+          const g = $(gridId);
           g.innerHTML = "";
           items.forEach((it, i) => {
             const a = document.createElement("a");
             a.className = "gcell";
-            a.href = "gallery/" + it.f;
+            a.href = folder + "/" + it.f;
             a.style.cursor = "zoom-in";
             const im = document.createElement("img");
             im.loading = "lazy";
-            im.src = "gallery/" + it.f;
-            im.alt = "Jean Phil banner";
+            im.src = folder + "/" + it.f;
+            im.alt = "Jean Phil community art";
             a.appendChild(im);
             a.addEventListener("click", (e) => {
               e.preventDefault();
-              const full = items.map((x) => "gallery/" + (x.full || x.f));
+              const full = items.map((x) => folder + "/" + (x.full || x.f));
               openLightbox(full[i], full, i);
             });
             g.appendChild(a);
           });
         } catch (e) {}
+      }
+      function loadGallery() {
+        loadGalleryInto("gallery", "ggrid", null);
+        loadGalleryInto("gallery_text", "tggrid", "gcolText");
       }
       loadGallery();
 

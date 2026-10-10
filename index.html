@@ -397,6 +397,10 @@
           <h3>Banner Maker</h3>
           <p class="tool-sub">Your Jean Phil becomes a Twitter banner &middot; 3 free per day</p>
           <button class="btn" id="genBtn" style="display:none">Generate My Banner</button>
+          <input class="tinput" id="labelInput" maxlength="40" placeholder="ROOM SIGN TEXT (OPTIONAL)" autocomplete="off" style="display:none" />
+          <p class="tool-sub" id="labelSub" style="display:none; margin:0">
+            Leave empty for &ldquo;Jean Phil NFT&rdquo; in the scene &middot; or write your own text for the room
+          </p>
           <div class="result" id="result"></div>
           <p class="hint" id="hint" style="display:none">
             The post text is pre-filled. Press Copy Image, then paste the banner
@@ -778,6 +782,8 @@
               selected = cell.querySelector("img");
               selectedTokenId = t.tokenId;
               genBtn.style.display = "inline-flex";
+              $("labelInput").style.display = "block";
+              $("labelSub").style.display = "block";
               setStatus("Jean Phil #" + t.tokenId + " selected. Ready to generate.");
             };
             grid.appendChild(cell);
@@ -807,6 +813,7 @@
             image: c.toDataURL("image/png"),
             tokenId: selectedTokenId,
             address: connectedAddress,
+            label: $("labelInput").value.trim(),
           });
           generatedImage = out.image;
           galleryToken = out.galleryToken || null;
@@ -863,6 +870,10 @@
             setStatus("Daily limit reached — 3 free banners per day per wallet. Come back tomorrow.", true);
           } else if (String(e.message).startsWith("global_daily_limit")) {
             setStatus("The service is at capacity for today — please come back tomorrow.", true);
+          } else if (String(e.message).startsWith("text_flagged")) {
+            setStatus("This sign text is not allowed — keep it friendly.", true);
+          } else if (String(e.message).startsWith("bad_text")) {
+            setStatus("Sign text is too long or has unsupported symbols (letters, numbers and basic punctuation only).", true);
           } else {
             setStatus("Generation failed: " + e.message, true);
           }

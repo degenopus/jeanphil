@@ -279,7 +279,8 @@
         display: flex; align-items: center; gap: 12px; width: 100%;
         padding: 13px 14px; border: 2px solid #000000; background: #ffffff;
         margin-bottom: 10px; cursor: pointer; font-weight: 600; font-size: 15px;
-        font-family: inherit; text-align: left;
+        font-family: inherit; text-align: left; text-decoration: none; color: inherit;
+        box-sizing: border-box;
         transition: background 0.12s ease, color 0.12s ease;
       }
       .wc-item:hover { background: #000000; color: #ffffff; }
@@ -611,6 +612,25 @@
         });
 
         const wcConfigured = WC_PROJECT_ID && !WC_PROJECT_ID.startsWith("PASTE_");
+        // Mobile fallback: no injected wallet in a regular phone browser —
+        // deep-link straight into the wallet's in-app browser, where our
+        // connect flow works natively. No registration or keys needed.
+        const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        if (!wallets.length && isMobile) {
+          const dappUrl = encodeURIComponent(location.origin + location.pathname);
+          const links = [
+            { name: "Open in MetaMask app", href: "https://metamask.app.link/dapp/" + location.host + location.pathname },
+            { name: "Open in Trust Wallet app", href: "https://link.trustwallet.com/open_url?coin_id=60&url=" + dappUrl },
+          ];
+          links.forEach((l) => {
+            const a = document.createElement("a");
+            a.className = "wc-item";
+            a.href = l.href;
+            a.innerHTML = "<span></span>";
+            a.querySelector("span").textContent = l.name;
+            list.appendChild(a);
+          });
+        }
         const wc = document.createElement("button");
         wc.className = "wc-item" + (wcConfigured ? "" : " disabled");
         wc.innerHTML = "<span>WalletConnect (mobile &amp; other wallets)</span>";
@@ -624,7 +644,9 @@
 
         $("wcNote").textContent = wallets.length
           ? (wcConfigured ? "" : "WalletConnect setup is pending — use a browser wallet for now.")
-          : "No browser wallet detected. Install MetaMask, or use WalletConnect on mobile (setup pending).";
+          : isMobile
+            ? "No wallet in this browser. Open the site inside MetaMask or Trust Wallet — pick an option above."
+            : "No browser wallet detected. Install MetaMask, or use WalletConnect on mobile (setup pending).";
         wcOverlay.classList.add("open");
       }
 

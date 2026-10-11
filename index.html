@@ -602,6 +602,12 @@
         if (window.ethereum && !wallets.length) {
           wallets.push({ info: { name: "Browser Wallet (MetaMask etc.)", icon: "" }, provider: window.ethereum });
         }
+        // fallback: Phantom injects window.phantom.ethereum (EVM), not window.ethereum
+        if (window.phantom && window.phantom.ethereum &&
+            ![...injectedWallets.values()].some((w) => w.provider === window.phantom.ethereum) &&
+            !wallets.some((w) => w.provider === window.phantom.ethereum)) {
+          wallets.push({ info: { name: "Phantom", icon: "" }, provider: window.phantom.ethereum });
+        }
         // MetaMask first, Trust Wallet second, then the rest A-Z
         wallets.sort((a, b) =>
           (WALLET_ORDER[a.info.name] ?? 99) - (WALLET_ORDER[b.info.name] ?? 99) ||
@@ -625,6 +631,7 @@
           const links = [
             { name: "Open in MetaMask app", href: "https://metamask.app.link/dapp/" + location.host + location.pathname },
             { name: "Open in Trust Wallet app", href: "https://link.trustwallet.com/open_url?coin_id=60&url=" + dappUrl },
+            { name: "Open in Phantom app", href: "https://phantom.com/ul/browse/" + dappUrl },
           ];
           links.forEach((l) => {
             const a = document.createElement("a");
@@ -649,7 +656,7 @@
         $("wcNote").textContent = wallets.length
           ? (wcConfigured ? "" : "WalletConnect setup is pending — use a browser wallet for now.")
           : isMobile
-            ? "No wallet in this browser. Open the site inside MetaMask or Trust Wallet — pick an option above."
+            ? "No wallet in this browser. Open the site inside your wallet app — MetaMask, Trust or Phantom above."
             : "No browser wallet detected. Install MetaMask, or use WalletConnect on mobile (setup pending).";
         wcOverlay.classList.add("open");
       }

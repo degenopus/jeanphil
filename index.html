@@ -369,7 +369,7 @@
   </div>
 </section>
 
-<section>
+<section id="gallery" style="display:none">
   <div class="wrap">
     <div class="sec-head"><h2>Community Gallery</h2><span class="num">07 / MADE BY HOLDERS</span></div>
     <p class="step">Made by holders with the tools above</p>
@@ -1051,13 +1051,14 @@
             a.target = "_blank"; a.rel = "noopener";
             const im = document.createElement("img");
             im.loading = "lazy"; im.alt = t.name || ("Jean Phil #" + t.tokenId);
-            const cids = t.imageIpfs ? t.imageIpfs.replace("ipfs://", "").split(",") : null;
-            let gi = 0;
-            im.onerror = () => {
-              if (cids && gi < GATEWAYS.length) { im.src = GATEWAYS[gi++] + "/" + cids; return; }
-              a.remove();
-            };
-            im.src = t.imageIpfs ? GATEWAYS[0] + "/" + t.imageIpfs.replace("ipfs://", "") : t.image;
+            if (t.imageIpfs) {
+              // ipfs: via Worker proxy (gateway rotation + edge cache)
+              loadNftImage(im, t.imageIpfs.replace("ipfs://", ""), t.tokenId);
+            } else {
+              im.crossOrigin = "anonymous";
+              im.onerror = () => a.remove();
+              im.src = t.image;
+            }
             const tag = document.createElement("span");
             tag.className = "mtag";
             tag.textContent = "Jean Phil #" + t.tokenId + " · OpenSea ↗";
@@ -1108,7 +1109,24 @@ import * as THREE from "three";
       const d = await fetch("https://jeanphil-banner.jeanphilnft.workers.dev/api/sample", {
         method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ n: 40 }),
       }).then(r => r.json());
-      texSrc = (d.tokens || []).map(t => t.imageIpfs ? "https://ipfs.filebase.io/ipfs/" + t.imageIpfs.replace("ipfs://", "") : t.image);
+      // ipfs images go through the Worker proxy (gateway rotation + edge cache)
+      const W = "https://jeanphil-banner.jeanphilnft.workers.dev";
+      const viaProxy = async (cid) => {
+        const r = await fetch(W + "/api/img", {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ cid }),
+        });
+        if (!r.ok) throw new Error("img " + r.status);
+        return URL.createObjectURL(await r.blob());
+      };
+      const list = (d.tokens || []).slice(0, 40);
+      const resolved = await Promise.all(list.map(async (t) => {
+        try {
+          if (t.imageIpfs) return await viaProxy(t.imageIpfs.replace("ipfs://", ""));
+          return t.image;
+        } catch (e) { return null; }
+      }));
+      texSrc = resolved.filter(Boolean);
     } catch (e) {}
     if (texSrc.length < 6) texSrc = ["assets/og-v2.jpg", "assets/og.jpg", "assets/banner.jpg"];
 

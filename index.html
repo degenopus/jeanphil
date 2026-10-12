@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>JEAN PHIL — 2222 unique personas on Ethereum</title>
-<meta name="description" content="A viral TikTok sensation turned NFT collection. 2222 unique Jean Phils on Ethereum. Daily floor evolution, OG limited editions, holder tools, contests and rewards.">
+<title>JEAN PHIL — 2222 unique personas on Robinhood Chain</title>
+<meta name="description" content="A viral TikTok sensation turned NFT collection. 2222 unique Jean Phils on Robinhood Chain. Daily floor evolution, OG limited editions, holder tools, contests and rewards.">
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 <style>
   * { margin:0; padding:0; box-sizing:border-box; }
@@ -75,9 +75,10 @@
   .card.invert p { color:rgba(255,255,255,.7); }
 
   /* marquee */
-  .marquee { overflow:hidden; border:2px solid #000; background:#fff; }
-  .marquee-track { display:flex; gap:10px; padding:10px; width:max-content; animation:jp-scroll 40s linear infinite; }
-  .marquee:hover .marquee-track { animation-play-state:paused; }
+  .marquee { overflow-x:auto; border:2px solid #000; background:#fff; cursor:grab; scrollbar-width:none; -ms-overflow-style:none; }
+  .marquee::-webkit-scrollbar { display:none; }
+  .marquee.dragging { cursor:grabbing; user-select:none; }
+  .marquee-track { display:flex; gap:10px; padding:10px; width:max-content; }
   @keyframes jp-scroll { from { transform:translateX(0); } to { transform:translateX(-50%); } }
   .m-item { position:relative; width:170px; height:170px; border:2px solid #000; overflow:hidden; flex:none; text-decoration:none; }
   .m-item img { width:100%; height:100%; object-fit:cover; display:block; }
@@ -88,17 +89,6 @@
   }
   .m-item:hover .mtag { transform:translateY(0); }
   .show-note { margin-top:16px; text-align:center; font-family:'Space Mono'; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:rgba(0,0,0,.5); }
-
-  /* emperor */
-  .emperor-box { border:2px solid #000; position:relative; background:#fff; }
-  #statueMount { width:100%; height:520px; cursor:grab; }
-  #statueMount:active { cursor:grabbing; }
-  .emperor-cap {
-    position:absolute; left:0; right:0; bottom:0; background:#000; color:#fff; padding:11px 18px;
-    font-family:'Space Mono'; font-size:10px; letter-spacing:.2em; text-transform:uppercase;
-    display:flex; justify-content:space-between; flex-wrap:wrap; gap:6px; pointer-events:none;
-  }
-  .emperor-poster { width:100%; display:block; }
 
   /* og */
   .og-strip { display:flex; align-items:center; gap:40px; flex-wrap:wrap; justify-content:center; }
@@ -198,7 +188,6 @@
     .about-grid, .tools-gate, .tools, .comm-grid { grid-template-columns:1fr; }
     nav .btn { padding:7px 10px; font-size:10px; }
     .stat { padding:12px 18px; min-width:100px; }
-    #statueMount { height:380px; }
     .m-item { width:130px; height:130px; }
   }
 </style>
@@ -222,11 +211,12 @@
       <svg viewBox="0 0 24 24"><path d="M12 2 2 7.5v2h20v-2L12 2Zm-8 9v8H2v3h20v-3h-2v-8h-3v8h-3v-8h-4v8H7v-8H4Z"/></svg>
       <span id="showroomBtnLabel">Showroom</span>
     </a>
+    <button class="btn solid" id="navConnectBtn" type="button">Connect Wallet</button>
   </nav>
 </header>
 
 <div class="hero">
-  <span class="kicker">2222 hand-crafted personas · Ethereum</span>
+  <span class="kicker">2222 hand-crafted personas · Robinhood Chain</span>
   <h1>JEAN <span>PHIL</span></h1>
   <div class="oui">« Oui Madame »</div>
   <p class="lead">A viral TikTok sensation turned NFT collection. An exaggerated, stylized French persona in a distinctive striped suit — every one of the 2222 Jean Phils is a unique 1/1 character with its own look, mood and story.</p>
@@ -240,75 +230,13 @@
   <a class="btn solid" style="padding:14px 32px; font-size:14px;" href="https://opensea.io/collection/jeanphil-nft" target="_blank" rel="noopener">Get your Jean Phil on OpenSea</a>
 </div>
 
-<section>
+<section id="toolsSection" style="display:none">
   <div class="wrap">
-    <div class="sec-head"><h2>The Story</h2><span class="num">01 / ABOUT</span></div>
-    <div class="about-grid">
-      <div>
-        <p>Jean Phil began as a massive viral sensation on TikTok: an exaggerated, stylized French persona, clad in a distinctive striped suit, famous for his signature catchphrase «Oui Madame». The meme grew into a universe — and the universe became a collection of 2222 unique characters on Ethereum.</p>
-        <p>The collection lives and evolves. Every day, the art of the floor Jean Phils changes thematically — the lowest-ranked characters evolve into new art, so the collection never stands still and every holder watches their Jean Phil grow. A separate line of limited «OG» editions drops one-of-one event pieces that never enter the main collection.</p>
-        <p>Jean Phil is a community-first project: an active holder base, constant contests and activities on X, and real rewards for the most active members — winners receive customized, personalized Jean Phil NFTs with special traits.</p>
-        <p>Jean Phil is an independent community art project. The collection is not directly affiliated with the creator of the original coin — it is an art derivative that stands entirely on its own.</p>
-      </div>
-      <div class="cards">
-        <div class="card invert"><h4>Daily Evolution</h4><p>Every day the art of the floor Jean Phils changes thematically — the collection never stands still.</p></div>
-        <div class="card"><h4>OG Limited Editions</h4><p>Separate limited-edition art drop — one-of-one event pieces, not part of the main 2222.</p></div>
-        <div class="card"><h4>Contests & Rewards</h4><p>Active members win customized, personalized Jean Phil NFTs with special traits.</p></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section style="background:#fafafa;">
-  <div class="wrap">
-    <div class="sec-head"><h2>Meet the Jean Phils</h2><span class="num">02 / SHOWCASE</span></div>
-    <div class="marquee">
-      <div class="marquee-track" id="marqueeTrack"></div>
-    </div>
-    <div class="show-note">Live from the collection — rotates automatically · hover to pause · click any Jean Phil for OpenSea</div>
-  </div>
-</section>
-
-<section>
-  <div class="wrap">
-    <div class="sec-head"><h2>The Emperor</h2><span class="num">03 / 2222 IN ONE</span></div>
-    <div class="emperor-box">
-      <div id="statueMount"></div>
-      <img class="emperor-poster" id="statuePoster" src="assets/statue-poster.jpg" style="display:none" alt="The Emperor — a statue built from thousands of Jean Phil NFTs">
-      <div class="emperor-cap">
-        <span>Interactive 3D — every particle is a real Jean Phil</span>
-        <span>Drag to rotate · scroll to zoom in / out</span>
-      </div>
-    </div>
-    <p style="margin-top:16px; font-size:13px; line-height:1.8; color:rgba(0,0,0,.68); max-width:720px;">
-      Zoom out — thousands of tiny Jean Phils assemble into a single monumental statue.
-      Zoom in — the cloud dissolves into individual characters, each one a real NFT from the collection.
-      A monument to the gang, built from the gang itself.
-    </p>
-  </div>
-</section>
-
-<section style="background:#fafafa;">
-  <div class="wrap">
-    <div class="sec-head"><h2>OG Limited Drop</h2><span class="num">04 / LIMITED</span></div>
-    <div class="og-strip">
-      <img src="assets/og-v2.jpg" alt="OG Jean Phil">
-      <div class="og-txt">
-        <h3>&#123;OG&#125; Jean Phil</h3>
-        <p>A separate limited-edition art drop — one-of-one event pieces. Not part of the main 2222 collection; each piece exists only for its event and will never be re-issued.</p>
-        <a class="btn solid" href="https://opensea.io/collection/og-jean-phil" target="_blank" rel="noopener">Open the OG collection</a>
-      </div>
-    </div>
-  </div>
-</section>
-
-<section>
-  <div class="wrap">
-    <div class="sec-head"><h2>Holder Tools</h2><span class="num">05 / MEMBERS ONLY</span></div>
+    <div class="sec-head"><h2>Holder Tools</h2><span class="num">01 / MEMBERS ONLY</span></div>
     <div class="tools-gate">
       <div class="gate-box">
-        <h3>Connect your wallet</h3>
-        <p>Own a Jean Phil? Connect your wallet to unlock the generator suite, the private holders chat and the 3D showroom. Verification is instant and free.</p>
+        <h3>Holder verified</h3>
+        <p>Welcome to the members area &mdash; the generator suite is live below. Pick any of your Jean Phils and create. Your wallet stays connected in the header.</p>
         <button class="btn solid" id="connectBtn" style="padding:13px 30px;">Connect Wallet</button>
         <p class="sync" id="sync" style="margin:14px 0 0;"></p>
       </div>
@@ -353,25 +281,56 @@
   </div>
 </section>
 
-<section style="background:#fafafa;">
+<section>
   <div class="wrap">
-    <div class="sec-head"><h2>Community & Contests</h2><span class="num">06 / GANG</span></div>
-    <div class="comm-grid">
-      <div class="comm"><div class="ico">&#10022;</div><h4>Active Community</h4><p>A large, loud and active gang of holders. Group chats, daily conversation and community-driven hype around every drop and evolution.</p></div>
-      <div class="comm"><div class="ico">&#9650;</div><h4>Contests on X</h4><p>Constant contests and activities on Twitter: banner competitions, meme battles, creativity challenges — with prizes for winners.</p></div>
-      <div class="comm"><div class="ico">&#9670;</div><h4>Rewards</h4><p>The most active members win customized, personalized Jean Phil NFTs with special traits — 1/1 art made exclusively for them. Activity pays.</p></div>
-    </div>
-    <div class="tweet-wall">
-      <div class="tweet"><b>@jeanphil_nft</b>Floor evolution is live — watch the lowest-ranked Jean Phils transform &#128064; #JeanPhil</div>
-      <div class="tweet"><b>@holder</b>My new banner made with the Banner Maker — look at him sitting at the computer! #JeanPhil</div>
-      <div class="tweet"><b>@jeanphil_nft</b>Contest: best meme with your Jean Phil wins a personalized 1/1 with special traits. Go! #JeanPhil</div>
+    <div class="sec-head"><h2>The Story</h2><span class="num">02 / ABOUT</span></div>
+    <div class="about-grid">
+      <div>
+        <p>Jean Phil began as a massive viral sensation on TikTok: an exaggerated, stylized French persona, clad in a distinctive striped suit, famous for his signature catchphrase «Oui Madame». The meme grew into a universe — and the universe became a collection of 2222 unique characters on Robinhood Chain.</p>
+        <p>The collection lives and evolves. Every day, the art of the floor Jean Phils changes thematically — the lowest-ranked characters evolve into new art, so the collection never stands still and every holder watches their Jean Phil grow. A separate line of limited «OG» editions drops one-of-one event pieces that never enter the main collection.</p>
+        <p>Jean Phil is a community-first project: an active holder base, constant contests and activities on X, and real rewards for the most active members — winners receive customized, personalized Jean Phil NFTs with special traits.</p>
+        <p>Jean Phil is an independent community art project. The collection is not directly affiliated with the creator of the original coin — it is an art derivative that stands entirely on its own.</p>
+      </div>
+      <div class="cards">
+        <div class="card invert"><h4>Daily Evolution</h4><p>Every day the art of the floor Jean Phils changes thematically — the collection never stands still.</p></div>
+        <div class="card"><h4>OG Limited Editions</h4><p>Separate limited-edition art drop — one-of-one event pieces, not part of the main 2222.</p></div>
+        <div class="card"><h4>Contests & Rewards</h4><p>Active members win customized, personalized Jean Phil NFTs with special traits.</p></div>
+      </div>
     </div>
   </div>
 </section>
 
+<section style="background:#fafafa;">
+  <div class="wrap">
+    <div class="sec-head"><h2>Meet the Jean Phils</h2><span class="num">03 / SHOWCASE</span></div>
+    <div class="marquee">
+      <div class="marquee-track" id="marqueeTrack"></div>
+    </div>
+    <div class="show-note">Live from the collection — drag or scroll to explore · click any Jean Phil for OpenSea</div>
+  </div>
+</section>
+
+<section style="background:#fafafa;">
+  <div class="wrap">
+    <div class="sec-head"><h2>OG Limited Drop</h2><span class="num">04 / LIMITED</span></div>
+    <div class="og-strip">
+      <img src="assets/og-v2.jpg" alt="OG Jean Phil">
+      <div class="og-txt">
+        <h3>&#123;OG&#125; Jean Phil</h3>
+        <p>A separate limited-edition art drop — one-of-one event pieces. Not part of the main 2222 collection; each piece exists only for its event and will never be re-issued.</p>
+        <a class="btn solid" href="https://opensea.io/collection/og-jean-phil" target="_blank" rel="noopener">Open the OG collection</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+
+
 <section id="gallery" style="display:none">
   <div class="wrap">
-    <div class="sec-head"><h2>Community Gallery</h2><span class="num">07 / MADE BY HOLDERS</span></div>
+    <div class="sec-head"><h2>Community Gallery</h2><span class="num">05 / MADE BY HOLDERS</span></div>
     <p class="step">Made by holders with the tools above</p>
     <div class="gcols" style="margin-top:18px;">
       <div class="gcol" id="gcolBanners">
@@ -382,6 +341,17 @@
         <p class="gcol-title">Text on me</p>
         <div class="ggrid sq" id="tggrid"></div>
       </div>
+    </div>
+  </div>
+</section>
+
+<section style="background:#fafafa;">
+  <div class="wrap">
+    <div class="sec-head"><h2>Community & Contests</h2><span class="num">06 / GANG</span></div>
+    <div class="comm-grid">
+      <div class="comm"><div class="ico">&#10022;</div><h4>Active Community</h4><p>A large, loud and active gang of holders. Group chats, daily conversation and community-driven hype around every drop and evolution.</p></div>
+      <div class="comm"><div class="ico">&#9650;</div><h4>Contests on X</h4><p>Constant contests and activities on Twitter: banner competitions, meme battles, creativity challenges — with prizes for winners.</p></div>
+      <div class="comm"><div class="ico">&#9670;</div><h4>Rewards</h4><p>The most active members win customized, personalized Jean Phil NFTs with special traits — 1/1 art made exclusively for them. Activity pays.</p></div>
     </div>
   </div>
 </section>
@@ -1080,123 +1050,77 @@
       // Needed only for mobile / non-injected wallets.
     </script>
 
-<script type="importmap">
-{ "imports": { "three": "https://unpkg.com/three@0.160.0/build/three.module.js" } }
-</script>
-<script type="module">
-// The Emperor — 12000 real Jean Phils assembled into one statue.
-// Points precomputed offline from the source model; textures are live tokens.
-import * as THREE from "three";
-(async () => {
-  const mount = document.getElementById("statueMount");
-  const poster = () => { mount.style.display = "none"; $("statuePoster").style.display = "block"; };
-  try {
-    let renderer;
-    try { renderer = new THREE.WebGLRenderer({ antialias: true }); }
-    catch (e) { poster(); return; }
-    renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
-    renderer.setSize(mount.clientWidth, mount.clientHeight);
-    mount.appendChild(renderer.domElement);
 
-    const scene = new THREE.Scene();
-    scene.background = new THREE.Color(0xffffff);
-    const camera = new THREE.PerspectiveCamera(50, mount.clientWidth / mount.clientHeight, .1, 400);
-    let dist = 26;
-    camera.position.set(0, 0, dist);
-    const group = new THREE.Group();
-    scene.add(group);
+<script>
+// ---- Header wallet button: mirrors the main Connect Wallet flow ----
+(function () {
+  const nav = document.getElementById("navConnectBtn");
+  const main = document.getElementById("connectBtn");
+  if (!nav || !main) return;
+  nav.addEventListener("click", () => main.click());
+  const sync = () => {
+    nav.textContent = main.textContent;
+    nav.disabled = main.disabled;
+    nav.classList.toggle("connected", main.textContent.indexOf("...") !== -1);
+  };
+  new MutationObserver(sync).observe(main, { childList: true, attributes: true, subtree: true });
+  sync();
+})();
 
-    const points = await (await fetch("statue-points.json")).json();
+// ---- Holder Tools visibility: only after holder verification ----
+(function () {
+  const sec = document.getElementById("toolsSection");
+  const holdersBtn = document.getElementById("holdersBtn");
+  if (!sec || !holdersBtn) return;
+  const apply = () => {
+    sec.style.display = holdersBtn.style.display === "none" ? "none" : "";
+  };
+  new MutationObserver(apply).observe(holdersBtn, { attributes: true, attributeFilter: ["style"] });
+  apply();
+})();
 
-    // textures: a live sample of collection tokens (falls back to local art)
-    let texSrc = [];
-    try {
-      const d = await fetch("https://jeanphil-banner.jeanphilnft.workers.dev/api/sample", {
-        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ n: 40 }),
-      }).then(r => r.json());
-      // ipfs images go through the Worker proxy (gateway rotation + edge cache)
-      const W = "https://jeanphil-banner.jeanphilnft.workers.dev";
-      const viaProxy = async (cid) => {
-        const ctl = new AbortController();
-        const timer = setTimeout(() => ctl.abort(), 12000);
-        try {
-          const r = await fetch(W + "/api/img", {
-            method: "POST", headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ cid }), signal: ctl.signal,
-          });
-          if (!r.ok) throw new Error("img " + r.status);
-          return URL.createObjectURL(await r.blob());
-        } finally { clearTimeout(timer); }
-      };
-      const list = (d.tokens || []).slice(0, 40);
-      const resolved = await Promise.all(list.map(async (t) => {
-        try {
-          if (t.imageIpfs) return await viaProxy(t.imageIpfs.replace("ipfs://", ""));
-          return t.image;
-        } catch (e) { return null; }
-      }));
-      texSrc = resolved.filter(Boolean);
-    } catch (e) {}
-    if (texSrc.length < 6) texSrc = ["assets/og-v2.jpg", "assets/og.jpg", "assets/banner.jpg"];
-
-    const loader = new THREE.TextureLoader();
-    loader.crossOrigin = "anonymous";
-    const dummy = new THREE.Object3D();
-    const CARD = .34;
-    const perTex = Math.ceil(points.length / texSrc.length);
-    await Promise.all(texSrc.map(async (src, ti) => {
-      let tex;
-      try { tex = await loader.loadAsync(src); }
-      catch (e) { return; }
-      tex.colorSpace = THREE.SRGBColorSpace;
-      const mat = new THREE.MeshBasicMaterial({ map: tex, side: THREE.DoubleSide });
-      const slice = points.slice(ti * perTex, (ti + 1) * perTex);
-      if (!slice.length) return;
-      const mesh = new THREE.InstancedMesh(new THREE.PlaneGeometry(CARD, CARD), mat, slice.length);
-      slice.forEach((p, i) => {
-        dummy.position.set(p[0], p[1], p[2]);
-        dummy.rotation.set(0, 0, 0);
-        dummy.updateMatrix();
-        mesh.setMatrixAt(i, dummy.matrix);
-      });
-      group.add(mesh);
-    }));
-    if (!group.children.length) { poster(); return; }
-
-    let targetRy = .5, targetRx = .05, ry = .5, rx = .05, dragging = false, px = 0, py = 0, auto = true;
-    mount.addEventListener("pointerdown", e => { dragging = true; auto = false; px = e.clientX; py = e.clientY; mount.setPointerCapture(e.pointerId); });
-    mount.addEventListener("pointerup", () => dragging = false);
-    mount.addEventListener("pointermove", e => {
-      if (!dragging) return;
-      targetRy += (e.clientX - px) * .006; px = e.clientX;
-      targetRx = Math.max(-1.2, Math.min(1.2, targetRx + (e.clientY - py) * .004)); py = e.clientY;
-    });
-    mount.addEventListener("wheel", e => {
-      e.preventDefault();
-      dist = Math.min(90, Math.max(2.8, dist + e.deltaY * .02));
-    }, { passive: false });
-
-    let visible = true;
-    new IntersectionObserver(en => visible = en[0].isIntersecting, { threshold: .05 }).observe(mount);
-
-    (function frame() {
-      requestAnimationFrame(frame);
-      if (!visible) return;
-      if (auto) targetRy += .0016;
-      ry += (targetRy - ry) * .08; rx += (targetRx - rx) * .08;
-      camera.position.z += (dist - camera.position.z) * .08;
-      group.rotation.y = ry; group.rotation.x = rx;
-      renderer.render(scene, camera);
-    })();
-    addEventListener("resize", () => {
-      camera.aspect = mount.clientWidth / mount.clientHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(mount.clientWidth, mount.clientHeight);
-    });
-  } catch (e) { poster(); }
+// ---- Meet the Jean Phils: auto-scroll + drag + wheel ----
+(function () {
+  const box = document.querySelector(".marquee");
+  const track = document.getElementById("marqueeTrack");
+  if (!box || !track) return;
+  let auto = true, hover = false, dragging = false, sx = 0, sl = 0, resume = null;
+  box.addEventListener("mouseenter", () => { hover = true; });
+  box.addEventListener("mouseleave", () => { hover = false; dragging = false; box.classList.remove("dragging"); });
+  box.addEventListener("wheel", (e) => {
+    e.preventDefault();
+    auto = false;
+    box.scrollLeft += e.deltaY;
+    clearTimeout(resume);
+    resume = setTimeout(() => { auto = true; }, 4000);
+  }, { passive: false });
+  box.addEventListener("pointerdown", (e) => {
+    dragging = true; sx = e.clientX; sl = box.scrollLeft;
+    box.classList.add("dragging");
+    try { box.setPointerCapture(e.pointerId); } catch (err) {}
+  });
+  box.addEventListener("pointermove", (e) => {
+    if (!dragging) return;
+    auto = false;
+    box.scrollLeft = sl - (e.clientX - sx);
+  });
+  const end = () => {
+    if (!dragging) return;
+    dragging = false; box.classList.remove("dragging");
+    clearTimeout(resume);
+    resume = setTimeout(() => { auto = true; }, 4000);
+  };
+  box.addEventListener("pointerup", end);
+  box.addEventListener("pointercancel", end);
+  (function tick() {
+    requestAnimationFrame(tick);
+    const half = track.scrollWidth / 2;
+    if (!auto || hover || dragging || half <= 0) return;
+    box.scrollLeft += 0.6;
+    if (box.scrollLeft >= half) box.scrollLeft -= half;
+  })();
 })();
 </script>
-
 
 </body>
 </html>

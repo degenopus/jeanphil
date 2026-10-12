@@ -1,0 +1,1082 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JEAN PHIL</title>
+    <meta name="description" content="Jean Phil NFT — turn your Jean Phil into a Twitter banner. Banner Maker, community gallery, holder chats." />
+    <meta property="og:title" content="JEAN PHIL" />
+    <meta property="og:description" content="Turn your Jean Phil NFT into a Twitter banner — 3 free per day." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://jeanphil.art/" />
+    <meta property="og:image" content="https://jeanphil.art/og.jpg" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="JEAN PHIL" />
+    <meta name="twitter:description" content="Turn your Jean Phil NFT into a Twitter banner — 3 free per day." />
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body {
+        background: #ffffff;
+        color: #000000;
+        font-family: Arial, Helvetica, sans-serif;
+      }
+      body {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 48px 16px 80px;
+        gap: 40px;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 15px;
+        font-weight: bold;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        text-decoration: none;
+        padding: 15px 30px;
+        border-radius: 6px;
+        border: 2px solid #000000;
+        color: #000000;
+        background: #ffffff;
+        cursor: pointer;
+        transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease, color 0.15s ease;
+      }
+      .btn:hover {
+        background: #000000;
+        color: #ffffff;
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+      }
+      .btn:disabled { opacity: 0.35; pointer-events: none; }
+      .btn.holders {
+        background: #17c964;
+        color: #000000;
+      }
+      .btn.holders:hover {
+        background: #0fa552;
+        color: #000000;
+        box-shadow: 0 6px 20px rgba(23, 201, 100, 0.5);
+      }
+      .btn svg { width: 20px; height: 20px; fill: currentColor; }
+      .btn.showroom {
+        background: #0b7a8a;
+        border-color: #0b7a8a;
+        color: #ffffff;
+      }
+      .btn.showroom:hover {
+        background: #0a5f6b;
+        border-color: #0a5f6b;
+        color: #ffffff;
+        box-shadow: 0 6px 20px rgba(11, 122, 138, 0.5);
+      }
+      .btn.showroom.verified {
+        background: #0fa552;
+        border-color: #0fa552;
+        box-shadow: 0 6px 20px rgba(23, 201, 100, 0.45);
+      }
+      .btn.showroom.verified:hover {
+        background: #0c8a45;
+        border-color: #0c8a45;
+      }
+      /* ---- OG limited drop (extra offer) ---- */
+      .og {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 14px;
+        text-decoration: none;
+        color: #000000;
+        transition: transform 0.15s ease;
+        padding: 38px 24px;
+      }
+      .og:hover { transform: translateY(-3px); }
+      .og img {
+        width: 240px;
+        height: 240px;
+        object-fit: cover;
+        border: 2px solid #000000;
+        border-radius: 8px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.18);
+      }
+      .og .og-title {
+        font-size: 17px;
+        font-weight: bold;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+      }
+      .og .og-sub {
+        font-family: 'Courier New', monospace;
+        font-size: 12px;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: rgba(0, 0, 0, 0.65);
+      }
+      .buttons { display: flex; gap: 18px; flex-wrap: wrap; justify-content: center; }
+
+      /* ---- Banner Maker ---- */
+      .maker {
+        width: 100%;
+        max-width: 860px;
+        border-top: 2px solid #000000;
+        padding-top: 40px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 28px;
+      }
+      #gallery { max-width: 1100px; }
+      .maker h2 {
+        font-size: clamp(22px, 4vw, 34px);
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+      .maker .step {
+        font-family: 'Courier New', monospace;
+        font-size: 12px;
+        letter-spacing: 0.3em;
+        text-transform: uppercase;
+        color: rgba(0,0,0,0.6);
+        text-align: center;
+      }
+      .status {
+        font-family: 'Courier New', monospace;
+        font-size: 13px;
+        letter-spacing: 0.1em;
+        text-align: center;
+        min-height: 18px;
+      }
+      .tools { display: flex; gap: 48px; width: 100%; align-items: flex-start; }
+      .tool { flex: 1; min-width: 0; display: flex; flex-direction: column; align-items: center; gap: 16px; }
+      .tool h3 { font-size: 17px; letter-spacing: 0.22em; text-transform: uppercase; margin: 0; }
+      .tool-sub {
+        font-family: 'Courier New', monospace; font-size: 11px;
+        letter-spacing: 0.12em; text-transform: uppercase;
+        color: rgba(0,0,0,0.55); text-align: center; line-height: 1.8; margin: 0;
+      }
+      .tinput {
+        width: 100%; max-width: 340px;
+        border: 2px solid #000000; border-radius: 10px;
+        background: #ffffff; color: #000000;
+        padding: 13px 16px; outline: none;
+        font-family: 'Courier New', monospace; font-size: 15px;
+        letter-spacing: 0.18em; text-transform: uppercase; text-align: center;
+      }
+      .tinput:focus { box-shadow: 0 0 0 3px rgba(0,0,0,0.14); }
+      @media (max-width: 720px) { .tools { flex-direction: column; } }
+      .status.err { color: #b00020; }
+      .sync {
+        font-family: 'Courier New', monospace;
+        font-size: 11px;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        color: rgba(0,0,0,0.45);
+        text-align: center;
+        margin-top: 6px;
+      }
+      .sync::before {
+        content: "";
+        display: inline-block;
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: #17c964;
+        margin-right: 8px;
+        vertical-align: 1px;
+      }
+      .sync.stale::before { background: #b00020; }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+        gap: 14px;
+        width: 100%;
+      }
+      .grid .cell {
+        position: relative;
+        border: 2px solid #000000;
+        border-radius: 8px;
+        overflow: hidden;
+        cursor: pointer;
+        aspect-ratio: 1;
+        background: #f2f2f2;
+        transition: transform 0.12s ease, box-shadow 0.12s ease;
+      }
+      .grid .cell img { width: 100%; height: 100%; object-fit: cover; display: block; }
+      .grid .cell:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.25); }
+      .grid .cell.selected { outline: 4px solid #000000; outline-offset: 2px; }
+      .grid .cell .cap {
+        font-family: 'Courier New', monospace;
+        font-size: 10px;
+        letter-spacing: 0.08em;
+        text-align: center;
+        padding: 4px 2px;
+        background: #000000;
+        color: #ffffff;
+      }
+      .grid .cell .cell-refresh {
+        position: absolute;
+        top: 6px;
+        right: 6px;
+        width: 26px;
+        height: 26px;
+        border: 2px solid #000;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.92);
+        color: #000;
+        font-size: 15px;
+        line-height: 1;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        transition: opacity 0.15s ease, background 0.15s ease, color 0.15s ease;
+      }
+      .grid .cell:hover .cell-refresh { opacity: 1; }
+      .grid .cell .cell-refresh:hover { background: #000; color: #fff; }
+      .grid .cell .cell-refresh:disabled { opacity: 0.4; cursor: default; }
+      @media (hover: none) {
+        .grid .cell .cell-refresh { opacity: 0.85; }
+      }
+      .result { display: flex; flex-direction: column; align-items: center; gap: 18px; width: 100%; }
+      .result img.banner {
+        width: 100%;
+        border: 2px solid #000000;
+        border-radius: 8px;
+      }
+      .spinner {
+        width: 34px; height: 34px;
+        border: 3px solid rgba(0,0,0,0.15);
+        border-top-color: #000000;
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+
+      /* ---- Wallet picker ---- */
+      .wc-overlay {
+        position: fixed; inset: 0; z-index: 100;
+        background: rgba(255,255,255,0.94);
+        display: none; align-items: center; justify-content: center;
+      }
+      .wc-overlay.open { display: flex; }
+      .wc-modal {
+        background: #ffffff; border: 3px solid #000000;
+        width: min(380px, 92vw); padding: 22px;
+      }
+      .wc-head {
+        display: flex; justify-content: space-between; align-items: center;
+        font-weight: 800; letter-spacing: 0.14em; text-transform: uppercase;
+        margin-bottom: 16px;
+      }
+      .wc-close {
+        background: none; border: none; font-size: 18px; cursor: pointer;
+        font-weight: 800; padding: 0 4px;
+      }
+      .wc-item {
+        display: flex; align-items: center; gap: 12px; width: 100%;
+        padding: 13px 14px; border: 2px solid #000000; background: #ffffff;
+        margin-bottom: 10px; cursor: pointer; font-weight: 600; font-size: 15px;
+        font-family: inherit; text-align: left; text-decoration: none; color: inherit;
+        box-sizing: border-box;
+        transition: background 0.12s ease, color 0.12s ease;
+      }
+      .wc-item:hover { background: #000000; color: #ffffff; }
+      .wc-item img { width: 24px; height: 24px; border-radius: 4px; }
+      .wc-item.disabled { opacity: 0.45; pointer-events: none; }
+      .wc-note {
+        font-family: 'Courier New', monospace; font-size: 11px;
+        color: rgba(0,0,0,0.55); line-height: 1.6; margin-top: 4px;
+      }
+
+      /* ---- Community gallery ---- */
+      .gcols {
+        display: flex; gap: 40px; align-items: flex-start; justify-content: center;
+        width: 100%; max-width: 1100px; flex-wrap: wrap;
+      }
+      .gcol { flex: 1 1 380px; min-width: 300px; display: flex; flex-direction: column; gap: 12px; }
+      .gcol-title {
+        font-family: 'Courier New', monospace; font-size: 12px;
+        letter-spacing: 0.3em; text-transform: uppercase;
+        color: rgba(0,0,0,0.55); margin: 0; text-align: center;
+      }
+      .ggrid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 12px;
+        width: 100%;
+      }
+      .ggrid.sq { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); }
+      .gcell {
+        border: 2px solid #000000; border-radius: 8px;
+        overflow: hidden; display: block;
+        transition: transform 0.12s ease, box-shadow 0.12s ease;
+      }
+      .gcell:hover { transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,0,0,0.25); }
+      .gcell img { width: 100%; display: block; aspect-ratio: 3 / 1; object-fit: cover; }
+      .ggrid.sq .gcell img { aspect-ratio: 1 / 1; }
+
+      /* ---- Lightbox ---- */
+      .lb-overlay {
+        position: fixed; inset: 0; z-index: 200;
+        background: rgba(255,255,255,0);
+        display: none; align-items: center; justify-content: center;
+        cursor: zoom-out;
+        transition: background 0.25s ease;
+      }
+      .lb-overlay.in { background: rgba(255,255,255,0.94); }
+      .lb-overlay img {
+        max-width: min(1152px, 92vw); max-height: 82vh; width: auto; height: auto;
+        border: 3px solid #000000; box-shadow: 0 24px 70px rgba(0,0,0,0.35);
+        transform: scale(0.94); opacity: 0;
+        transition: transform 0.25s ease, opacity 0.25s ease;
+      }
+      .lb-overlay.in img { transform: scale(1); opacity: 1; }
+      .lb-nav {
+        position: fixed; top: 50%; transform: translateY(-50%);
+        width: 52px; height: 52px; border: 2px solid #000; border-radius: 50%;
+        background: #fff; color: #000; font-size: 22px; line-height: 1;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; user-select: none; z-index: 201;
+        transition: background 0.15s ease, color 0.15s ease;
+      }
+      .lb-nav:hover { background: #000; color: #fff; }
+      .lb-nav.prev { left: 18px; }
+      .lb-nav.next { right: 18px; }
+      @media (max-width: 560px) {
+        .lb-nav { width: 42px; height: 42px; font-size: 18px; }
+        .lb-nav.prev { left: 8px; }
+        .lb-nav.next { right: 8px; }
+      }
+      .hint {
+        font-family: 'Courier New', monospace;
+        font-size: 11px;
+        letter-spacing: 0.12em;
+        color: rgba(0,0,0,0.55);
+        text-align: center;
+        max-width: 520px;
+        line-height: 1.7;
+      }
+      @media (max-width: 560px) {
+        .buttons .btn { padding: 13px 18px; font-size: 13px; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="buttons">
+      <a class="btn" href="https://x.com/jeanphil_nft" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.9 1.15h3.68l-8.04 9.19L24 22.85h-7.41l-5.8-7.58-6.64 7.58H.47l8.6-9.83L0 1.15h7.59l5.24 6.93 6.07-6.93Zm-1.29 19.5h2.04L6.49 3.24H4.3l13.31 17.41Z"/></svg>
+        Follow on X
+      </a>
+      <a class="btn" href="https://opensea.io/collection/jeanphil-nft" target="_blank" rel="noopener">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22.86 13.13c0 5.27-4.28 9.54-9.55 9.54-.86 0-1.7-.12-2.5-.33l-4.58 2.64v-3.4A9.53 9.53 0 0 1 3.76 13.1c0-5.28 4.28-9.55 9.55-9.55s9.55 4.27 9.55 9.58Zm-9.55-7.7a7.7 7.7 0 0 0-7.68 7.68c0 1.75.6 3.36 1.6 4.65l-.15 1.85 2.04-1.09c.67.3 1.41.47 2.19.47a7.7 7.7 0 0 0 7.68-7.68 7.7 7.7 0 0 0-7.68-7.88Zm3.34 7.63c-.16-.09-1.02-.5-1.18-.56-.16-.06-.27-.09-.39.09-.11.16-.45.56-.55.67-.1.11-.2.13-.37.04-.16-.09-.69-.25-1.32-.81-.49-.44-.82-.98-.91-1.14-.1-.17-.01-.26.07-.34.07-.08.16-.2.25-.29.08-.1.11-.17.16-.29.06-.11.03-.21-.01-.3-.05-.08-.39-.95-.54-1.3-.14-.34-.29-.3-.4-.3h-.34c-.12 0-.3.04-.46.22-.16.17-.6.59-.6 1.45 0 .85.62 1.68.71 1.79.09.12 1.23 1.88 2.98 2.64.42.18.75.29 1 .37.42.13.8.11 1.1.07.34-.05 1.02-.42 1.17-.82.14-.41.14-.75.09-.82-.04-.08-.15-.12-.31-.21Z"/></svg>
+        OpenSea
+      </a>
+      <a class="btn holders" id="holdersBtn" href="https://x.com/i/chat/group_join/g2104714618404843869/IEp0zSZjEV" target="_blank" rel="noopener" style="display:none">
+        Join Private Chat for Holders
+      </a>
+      <a class="btn" href="https://x.com/i/chat/group_join/g2101849840002969642/jQZu5H5DuI" target="_blank" rel="noopener">
+        Join Group Chat
+      </a>
+      <a class="btn showroom" href="showroom/" id="showroomBtn" title="Holders only — walk the 3D showroom" style="display:none">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2 2 7.5v2h20v-2L12 2Zm-8 9v8H2v3h20v-3h-2v-8h-3v8h-3v-8h-4v8H7v-8H4Z"/></svg>
+        <span id="showroomBtnLabel">Enter Showroom</span>
+      </a>
+    </div>
+
+    <section class="maker">
+      <p class="step">Connect wallet &middot; pick your Jean Phil &middot; generate</p>
+      <button class="btn" id="connectBtn">Connect Wallet</button>
+      <p class="sync" id="sync"></p>
+      <p class="status" id="status"></p>
+      <div class="grid" id="grid"></div>
+      <div class="tools">
+        <div class="tool">
+          <h3>Banner Maker</h3>
+          <p class="tool-sub">Your Jean Phil becomes a Twitter banner &middot; 3 free per day</p>
+          <button class="btn" id="genBtn" style="display:none">Generate My Banner</button>
+          <input class="tinput" id="labelInput" maxlength="40" placeholder="ROOM SIGN TEXT (OPTIONAL)" autocomplete="off" style="display:none" />
+          <p class="tool-sub" id="labelSub" style="display:none; margin:0">
+            Leave empty for &ldquo;Jean Phil NFT&rdquo; in the scene &middot; or write your own text for the room
+          </p>
+          <div class="result" id="result"></div>
+          <p class="hint" id="hint" style="display:none">
+            The post text is pre-filled. Press Copy Image, then paste the banner
+            straight into your post (Ctrl+V / long-press) &mdash; X doesn&rsquo;t let
+            websites attach images automatically. Crop it however you like.
+          </p>
+        </div>
+        <div class="tool">
+          <h3>Text on me</h3>
+          <p class="tool-sub">Write anything across your Jean Phil&rsquo;s face &middot; 1 free per day</p>
+          <input class="tinput" id="textInput" maxlength="40" placeholder="WRITE ANYTHING" autocomplete="off" />
+          <button class="btn" id="textBtn" disabled>Write It</button>
+          <p class="status" id="textStatus"></p>
+          <div class="result" id="textResult"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="maker" id="gallery" style="display:none">
+      <h2>Community Gallery</h2>
+      <p class="step">Made by holders with the tools above</p>
+      <div class="gcols">
+        <div class="gcol" id="gcolBanners">
+          <p class="gcol-title">Banners</p>
+          <div class="ggrid" id="ggrid"></div>
+        </div>
+        <div class="gcol" id="gcolText" style="display:none">
+          <p class="gcol-title">Text on me</p>
+          <div class="ggrid sq" id="tggrid"></div>
+        </div>
+      </div>
+    </section>
+
+    <a class="og" href="https://opensea.io/collection/og-jean-phil" target="_blank" rel="noopener">
+      <img src="assets/og-v2.jpg" alt="OG Jean Phil" />
+      <span class="og-title">&#123;OG&#125; Jean Phil</span>
+      <span class="og-sub">Limited editions for OG</span>
+    </a>
+
+    <div class="wc-overlay" id="wcOverlay">
+      <div class="wc-modal">
+        <div class="wc-head">
+          <span>Connect Wallet</span>
+          <button class="wc-close" id="wcClose" aria-label="Close">&#10005;</button>
+        </div>
+        <div id="wcList"></div>
+        <p class="wc-note" id="wcNote"></p>
+      </div>
+    </div>
+
+    <div class="lb-overlay" id="lbOverlay">
+      <img id="lbImg" alt="Jean Phil banner">
+      <button class="lb-nav prev" id="lbPrev" aria-label="Previous banner">&#8592;</button>
+      <button class="lb-nav next" id="lbNext" aria-label="Next banner">&#8594;</button>
+    </div>
+
+    <script>
+      // WalletConnect (Reown) project id — free at https://cloud.reown.com
+      // Needed only for mobile / non-injected wallets.
+      const WC_PROJECT_ID = "PASTE_YOUR_REOWN_PROJECT_ID";
+
+      const GATEWAYS = [
+        "https://ipfs.filebase.io/ipfs",
+        "https://dweb.link/ipfs",
+        "https://ipfs.io/ipfs",
+        "https://gateway.pinata.cloud/ipfs",
+      ];
+
+      const $ = (id) => document.getElementById(id);
+      const status = $("status"), grid = $("grid"), connectBtn = $("connectBtn"),
+            genBtn = $("genBtn"), result = $("result"), hint = $("hint");
+      let selected = null, selectedTokenId = null, generatedImage = null;
+      let connectedAddress = null, limitLeft = null, galleryToken = null;
+
+      function setStatus(msg, isErr) {
+        status.textContent = msg || "";
+        status.className = "status" + (isErr ? " err" : "");
+      }
+
+      // NFT images go through our Worker proxy (gateway rotation + edge cache).
+      // Falls back to a labeled placeholder so a cell is never an empty square.
+      const imgUrlCache = new Map();
+      async function loadNftImage(img, ipfsPath, tokenId) {
+        try {
+          let url = imgUrlCache.get(ipfsPath);
+          if (!url) {
+            const r = await fetch(API_BASE + "/api/img", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ cid: ipfsPath }),
+            });
+            if (!r.ok) throw new Error("img " + r.status);
+            url = URL.createObjectURL(await r.blob()); // same-origin blob: canvas stays clean
+            imgUrlCache.set(ipfsPath, url);
+          }
+          img.src = url;
+        } catch (e) {
+          img.src = "data:image/svg+xml;utf8," + encodeURIComponent(
+            '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400">' +
+            '<rect width="400" height="400" fill="#141414"/>' +
+            '<text x="200" y="215" font-family="monospace" font-size="52" fill="#ffffff" text-anchor="middle">#' + tokenId + '</text></svg>');
+        }
+      }
+
+      const API_BASE = ["localhost", "127.0.0.1"].includes(location.hostname)
+        ? "" // local dev: same-origin (python server on :8787)
+        : "https://jeanphil-banner.jeanphilnft.workers.dev";
+
+      async function api(path, body) {
+        const r = await fetch(API_BASE + path, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+        const data = await r.json().catch(() => ({}));
+        if (!r.ok) throw new Error(data.error || ("HTTP " + r.status));
+        return data;
+      }
+
+      // Ownership-index freshness badge: green dot + "Index synced" when the
+      // hourly cron is current, red when the index is lagging or errored.
+      (async function refreshSyncBadge() {
+        const el = $("sync");
+        try {
+          const s = await api("/api/status", {});
+          if (!s.head) {
+            el.textContent = "Index syncing…";
+            el.classList.add("stale");
+            return;
+          }
+          const ageMin = s.updatedAt ? Math.round((Date.now() - s.updatedAt) / 60000) : null;
+          const ago = ageMin == null ? "" : ageMin < 1 ? " · just now" : ageMin < 60 ? " · " + ageMin + " min ago" : " · " + Math.round(ageMin / 60) + " h ago";
+          if (s.stale || (ageMin != null && ageMin > 180)) {
+            el.textContent = "Index catching up" + ago;
+            el.classList.add("stale");
+          } else {
+            el.textContent = "Index synced" + ago;
+          }
+        } catch (e) {
+          el.textContent = "";
+        }
+        setTimeout(refreshSyncBadge, 5 * 60 * 1000);
+      })();
+
+      // WalletConnect for mobile + all popular EVM wallets.
+      // We only READ data, so the chain the wallet is on doesn't matter —
+      // the address is identical across all EVM chains.
+      async function connectViaWalletConnect() {
+        if (!WC_PROJECT_ID || WC_PROJECT_ID.startsWith("PASTE_")) {
+          throw new Error("WalletConnect is not configured yet. Use MetaMask or another browser wallet.");
+        }
+        setStatus("Opening WalletConnect...");
+        const [{ default: SignClient }, { WalletConnectModal }] = await Promise.all([
+          import("https://esm.sh/@walletconnect/sign-client@2"),
+          import("https://esm.sh/@walletconnect/modal"),
+        ]);
+        const modal = new WalletConnectModal({ projectId: WC_PROJECT_ID });
+        const client = await SignClient.init({
+          projectId: WC_PROJECT_ID,
+          metadata: {
+            name: "Jean Phil Banner Maker",
+            description: "Turn your Jean Phil NFT into a Twitter banner",
+            url: location.origin,
+            icons: [],
+          },
+        });
+        const { uri, approval } = await client.connect({
+          requiredNamespaces: { eip155: { methods: [], chains: ["eip155:1"], events: [] } },
+        });
+        if (uri) modal.openModal({ uri });
+        const session = await approval();
+        modal.closeModal();
+        return session.namespaces.eip155.accounts[0].split(":")[2];
+      }
+
+      // ---- Wallet picker (EIP-6963 discovery + WalletConnect) ----
+      const injectedWallets = new Map(); // uuid -> { info, provider }
+      window.addEventListener("eip6963:announceProvider", (e) => {
+        const { info, provider } = e.detail;
+        if (info && provider && !injectedWallets.has(info.uuid)) {
+          injectedWallets.set(info.uuid, { info, provider });
+        }
+      });
+      window.dispatchEvent(new Event("eip6963:requestProvider"));
+
+      const wcOverlay = $("wcOverlay");
+
+      function closeWalletModal() { wcOverlay.classList.remove("open"); }
+      $("wcClose").onclick = closeWalletModal;
+      wcOverlay.addEventListener("click", (e) => { if (e.target === wcOverlay) closeWalletModal(); });
+
+      const WALLET_ORDER = { "MetaMask": 0, "Trust Wallet": 1 };
+
+      function openWalletModal() {
+        const list = $("wcList");
+        list.innerHTML = "";
+        const wallets = [...injectedWallets.values()];
+        // fallback: single injected provider that doesn't speak EIP-6963
+        if (window.ethereum && !wallets.length) {
+          wallets.push({ info: { name: "Browser Wallet (MetaMask etc.)", icon: "" }, provider: window.ethereum });
+        }
+        // fallback: Phantom injects window.phantom.ethereum (EVM), not window.ethereum
+        if (window.phantom && window.phantom.ethereum &&
+            ![...injectedWallets.values()].some((w) => w.provider === window.phantom.ethereum) &&
+            !wallets.some((w) => w.provider === window.phantom.ethereum)) {
+          wallets.push({ info: { name: "Phantom", icon: "" }, provider: window.phantom.ethereum });
+        }
+        // MetaMask first, Trust Wallet second, then the rest A-Z
+        wallets.sort((a, b) =>
+          (WALLET_ORDER[a.info.name] ?? 99) - (WALLET_ORDER[b.info.name] ?? 99) ||
+          a.info.name.localeCompare(b.info.name));
+        wallets.forEach((w) => {
+          const b = document.createElement("button");
+          b.className = "wc-item";
+          b.innerHTML = (w.info.icon ? '<img src="' + w.info.icon + '" alt="">' : "") + "<span></span>";
+          b.querySelector("span").textContent = w.info.name;
+          b.onclick = () => { closeWalletModal(); connectWith(w.provider); };
+          list.appendChild(b);
+        });
+
+        const wcConfigured = WC_PROJECT_ID && !WC_PROJECT_ID.startsWith("PASTE_");
+        // Mobile fallback: no injected wallet in a regular phone browser —
+        // deep-link straight into the wallet's in-app browser, where our
+        // connect flow works natively. No registration or keys needed.
+        const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        if (!wallets.length && isMobile) {
+          const dappUrl = encodeURIComponent(location.origin + location.pathname);
+          const links = [
+            { name: "Open in MetaMask app", href: "https://metamask.app.link/dapp/" + location.host + location.pathname },
+            { name: "Open in Trust Wallet app", href: "https://link.trustwallet.com/open_url?coin_id=60&url=" + dappUrl },
+            { name: "Open in Phantom app", href: "https://phantom.com/ul/browse/" + dappUrl },
+          ];
+          links.forEach((l) => {
+            const a = document.createElement("a");
+            a.className = "wc-item";
+            a.href = l.href;
+            a.innerHTML = "<span></span>";
+            a.querySelector("span").textContent = l.name;
+            list.appendChild(a);
+          });
+        }
+        const wc = document.createElement("button");
+        wc.className = "wc-item" + (wcConfigured ? "" : " disabled");
+        wc.innerHTML = "<span>WalletConnect (mobile &amp; other wallets)</span>";
+        if (wcConfigured) {
+          wc.onclick = () => {
+            closeWalletModal();
+            connectViaWalletConnect().then(finishConnect).catch((e) => setStatus(e.message || "Connection failed", true));
+          };
+        }
+        list.appendChild(wc);
+
+        $("wcNote").textContent = wallets.length
+          ? (wcConfigured ? "" : "WalletConnect setup is pending — use a browser wallet for now.")
+          : isMobile
+            ? "No wallet in this browser. Open the site inside your wallet app — MetaMask, Trust or Phantom above."
+            : "No browser wallet detected. Install MetaMask, or use WalletConnect on mobile (setup pending).";
+        wcOverlay.classList.add("open");
+      }
+
+      let watchedProvider = null;
+      function watchProvider(provider) {
+        if (watchedProvider === provider || !provider || !provider.on) return;
+        watchedProvider = provider;
+        provider.on("accountsChanged", (accs) => {
+          if (accs && accs[0] && accs[0].toLowerCase() !== (connectedAddress || "").toLowerCase()) {
+            setStatus("Wallet switched — reloading your Jean Phils...");
+            finishConnect(accs[0]);
+          }
+        });
+        provider.on("disconnect", () => {
+          connectedAddress = null;
+          connectBtn.textContent = "Connect Wallet";
+          $("holdersBtn").style.display = "none";
+          $("showroomBtn").style.display = "none";
+          sessionStorage.removeItem("jp_holder");
+        });
+      }
+
+      async function connectWith(provider) {
+        try {
+          setStatus("Connecting...");
+          // Wallets cache the granted account per site and silently return it.
+          // Revoking the cached permission first forces a fresh account picker,
+          // so switching to another account actually takes effect.
+          try {
+            await provider.request({ method: "wallet_revokePermissions", params: [{ eth_accounts: [] }] });
+          } catch (e) { /* wallet may not support revoke — continue anyway */ }
+          const accounts = await provider.request({ method: "eth_requestAccounts" });
+          watchProvider(provider);
+          await finishConnect(accounts[0]);
+        } catch (e) {
+          setStatus(e.message || "Connection failed", true);
+        }
+      }
+
+      async function finishConnect(address) {
+        connectedAddress = address;
+        connectBtn.textContent = address.slice(0, 6) + "..." + address.slice(-4);
+        await loadNfts(address);
+        try {
+          const lim = await api("/api/limit", { address });
+          limitLeft = lim.remaining;
+          setStatus("Pick one of your Jean Phils:  ·  " + limitLeft + " of " + lim.limit + " free banners left today");
+        } catch (e) {}
+      }
+
+      function connect() { openWalletModal(); }
+
+      async function loadNfts(address) {
+        setStatus("Checking your Jean Phils...");
+        const holdersBtn = $("holdersBtn");
+        try {
+          const { tokens } = await api("/api/nfts", { address });
+          if (!tokens.length) {
+            holdersBtn.style.display = "none";
+            $("showroomBtn").style.display = "none";
+            sessionStorage.removeItem("jp_holder");
+            setStatus("No Jean Phil NFTs found in this wallet.", true);
+            return;
+          }
+          // holder verified — this key unlocks the showroom and future holder-only features
+          sessionStorage.setItem("jp_holder", address);
+          if (tokens[0] && tokens[0].imageUrl) {
+            sessionStorage.setItem("jp_nft_id", tokens[0].tokenId);
+            sessionStorage.setItem("jp_nft_img", tokens[0].imageUrl);
+          }
+          holdersBtn.style.display = "inline-flex"; // holder verified — show private chat
+          $("showroomBtn").style.display = "inline-flex";
+          setStatus("Pick one of your Jean Phils:");
+          grid.innerHTML = "";
+          tokens.forEach((t) => {
+            const cell = document.createElement("div");
+            cell.className = "cell";
+            const img = document.createElement("img");
+            img.alt = t.name;
+            img.loading = "lazy";
+            if (t.imageIpfs && t.imageIpfs.startsWith("ipfs://")) {
+              loadNftImage(img, t.imageIpfs.slice(7), t.tokenId);
+            } else if (t.imageUrl) {
+              // direct URL (OpenSea CDN override) — CDN sends CORS *, canvas stays clean
+              img.crossOrigin = "anonymous";
+              img.src = t.imageUrl;
+              img.onerror = () => {
+                img.src = "data:image/svg+xml;utf8," + encodeURIComponent(
+                  '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400">' +
+                  '<rect width="400" height="400" fill="#141414"/>' +
+                  '<text x="200" y="215" font-family="monospace" font-size="52" fill="#ffffff" text-anchor="middle">#' + t.tokenId + '</text></svg>');
+              };
+            }
+            cell.appendChild(img);
+            const cap = document.createElement("div");
+            cap.className = "cap";
+            cap.textContent = "#" + t.tokenId;
+            cell.appendChild(cap);
+            // let a holder re-pull the image from OpenSea after a Studio edit
+            const re = document.createElement("button");
+            re.className = "cell-refresh";
+            re.title = "Refresh image from OpenSea (after a Studio edit)";
+            re.textContent = "\u21BB";
+            re.onclick = async (ev) => {
+              ev.stopPropagation();
+              re.disabled = true;
+              try {
+                const res = await api("/api/refresh_meta", { tokenIds: [Number(t.tokenId)] });
+                const ok = res.results && res.results[0] && res.results[0].ok;
+                if (ok && res.results[0].image) {
+                  const url = res.results[0].image;
+                  imgUrlCache.clear();
+                  if (url.startsWith("ipfs://")) loadNftImage(img, url.slice(7), t.tokenId);
+                  else { img.crossOrigin = "anonymous"; img.src = url; }
+                  setStatus("Image for #" + t.tokenId + " refreshed from OpenSea.");
+                } else {
+                  setStatus("Refresh failed for #" + t.tokenId + " — try again in a minute.", true);
+                }
+              } catch (e2) {
+                setStatus("Refresh failed: " + e2.message, true);
+              } finally {
+                setTimeout(() => { re.disabled = false; }, 20000);
+              }
+            };
+            cell.appendChild(re);
+            cell.onclick = () => {
+              grid.querySelectorAll(".cell").forEach((c) => c.classList.remove("selected"));
+              cell.classList.add("selected");
+              selected = cell.querySelector("img");
+              selectedTokenId = t.tokenId;
+              genBtn.style.display = "inline-flex";
+              $("labelInput").style.display = "block";
+              $("labelSub").style.display = "block";
+              setStatus("Jean Phil #" + t.tokenId + " selected. Ready to generate.");
+            };
+            grid.appendChild(cell);
+          });
+        } catch (e) {
+          $("holdersBtn").style.display = "none";
+          $("showroomBtn").style.display = "none";
+          setStatus("Failed to load NFTs: " + e.message, true);
+        }
+      }
+
+      const BANNER_W = 1920, BANNER_H = 640;
+
+      async function generate() {
+        if (!selected) return;
+        genBtn.disabled = true;
+        result.innerHTML = '<div class="spinner"></div>';
+        setStatus("Generating your banner... this takes about a minute.");
+        try {
+          await selected.decode();
+          // plain original image -> model paints the scene around the character
+          const c = document.createElement("canvas");
+          c.width = selected.naturalWidth;
+          c.height = selected.naturalHeight;
+          c.getContext("2d").drawImage(selected, 0, 0);
+          const out = await api("/api/generate", {
+            image: c.toDataURL("image/png"),
+            tokenId: selectedTokenId,
+            address: connectedAddress,
+            label: $("labelInput").value.trim(),
+          });
+          generatedImage = out.image;
+          galleryToken = out.galleryToken || null;
+          result.innerHTML = "";
+          const img = document.createElement("img");
+          img.className = "banner";
+          img.src = generatedImage;
+          result.appendChild(img);
+          const row = document.createElement("div");
+          row.className = "buttons";
+          const dl = document.createElement("a");
+          dl.className = "btn";
+          dl.textContent = "Download Banner";
+          dl.download = "jeanphil-banner.png";
+          dl.href = generatedImage;
+          const copy = document.createElement("button");
+          copy.className = "btn";
+          copy.textContent = "Copy Image";
+          copy.onclick = copyImage;
+          const tweet = document.createElement("a");
+          tweet.className = "btn";
+          const text = encodeURIComponent("Look at my new banner \u{1F440} @jeanphil_nft #JeanPhil");
+          tweet.href = "https://x.com/intent/post?text=" + text;
+          tweet.target = "_blank";
+          tweet.rel = "noopener";
+          tweet.textContent = "Post on X";
+          row.appendChild(dl);
+          row.appendChild(copy);
+          row.appendChild(tweet);
+          result.appendChild(row);
+          hint.style.display = "block";
+          if (typeof out.remaining === "number") limitLeft = out.remaining;
+          setStatus("Done. Your banner is ready.  ·  " + limitLeft + " of 3 free banners left today.");
+          // thumb (grid) + full-resolution banner -> community gallery (fire and forget)
+          try {
+            await img.decode();
+            const th = document.createElement("canvas");
+            th.width = 384; th.height = 128;
+            th.getContext("2d").drawImage(img, 0, 0, 384, 128);
+            const pv = document.createElement("canvas");
+            pv.width = BANNER_W; pv.height = BANNER_H;
+            pv.getContext("2d").drawImage(img, 0, 0, BANNER_W, BANNER_H);
+            api("/api/gallery", {
+              image: th.toDataURL("image/jpeg", 0.8),
+              full: pv.toDataURL("image/jpeg", 0.85),
+              tokenId: selectedTokenId,
+              address: connectedAddress,
+              galleryToken: galleryToken,
+            }).then(() => loadGallery()).catch(() => {});
+          } catch (e) {}
+        } catch (e) {
+          result.innerHTML = "";
+          if (String(e.message).startsWith("daily_limit")) {
+            setStatus("Daily limit reached — 3 free banners per day per wallet. Come back tomorrow.", true);
+          } else if (String(e.message).startsWith("global_daily_limit")) {
+            setStatus("The service is at capacity for today — please come back tomorrow.", true);
+          } else if (String(e.message).startsWith("text_flagged")) {
+            setStatus("This sign text is not allowed — keep it friendly.", true);
+          } else if (String(e.message).startsWith("bad_text")) {
+            setStatus("Sign text is too long or has unsupported symbols (letters, numbers and basic punctuation only).", true);
+          } else {
+            setStatus("Generation failed: " + e.message, true);
+          }
+        } finally {
+          genBtn.disabled = false;
+        }
+      }
+
+      async function copyImage() {
+        if (!generatedImage) return;
+        try {
+          const blob = await (await fetch(generatedImage)).blob();
+          await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+          setStatus("Banner copied to clipboard — paste it into your post (Ctrl+V).");
+        } catch (e) {
+          setStatus("Copy failed — use Download Banner instead.", true);
+        }
+      }
+
+      connectBtn.onclick = connect;
+      genBtn.onclick = generate;
+
+      // ---- Text on me ----
+      const textInput = $("textInput"), textBtn = $("textBtn"), textStatus = $("textStatus"), textResult = $("textResult");
+      let textGenerated = null;
+      function setTextStatus(m, isErr) {
+        textStatus.textContent = m;
+        textStatus.className = "status" + (isErr ? " err" : "");
+      }
+      textInput.addEventListener("input", () => { textBtn.disabled = !textInput.value.trim(); });
+      textBtn.onclick = async () => {
+        const text = textInput.value.trim();
+        if (!text) return;
+        if (!selectedTokenId || !selected) {
+          setTextStatus("Pick one of your Jean Phils above first.", true);
+          return;
+        }
+        textBtn.disabled = true;
+        setTextStatus("Writing it on your Jean Phil…");
+        try {
+          await selected.decode();
+          const c = document.createElement("canvas");
+          c.width = selected.naturalWidth;
+          c.height = selected.naturalHeight;
+          c.getContext("2d").drawImage(selected, 0, 0);
+          const out = await api("/api/text_on_me", {
+            image: c.toDataURL("image/png"),
+            tokenId: selectedTokenId,
+            address: connectedAddress,
+            text,
+          });
+          textGenerated = out.image;
+          textResult.innerHTML = "";
+          const img = document.createElement("img");
+          img.className = "banner";
+          img.src = textGenerated;
+          textResult.appendChild(img);
+          const row = document.createElement("div");
+          row.className = "buttons";
+          const dl = document.createElement("a");
+          dl.className = "btn";
+          dl.textContent = "Download";
+          dl.download = "jeanphil-text.png";
+          dl.href = textGenerated;
+          const copy = document.createElement("button");
+          copy.className = "btn";
+          copy.textContent = "Copy Image";
+          copy.onclick = async () => {
+            try {
+              const blob = await (await fetch(textGenerated)).blob();
+              await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+              setTextStatus("Copied — paste it anywhere (Ctrl+V).");
+            } catch (e) {
+              setTextStatus("Copy failed — use Download instead.", true);
+            }
+          };
+          const tweet = document.createElement("a");
+          tweet.className = "btn";
+          const t = encodeURIComponent('"' + text + '" — written on my Jean Phil \u{1F440} @jeanphil_nft #JeanPhil');
+          tweet.href = "https://x.com/intent/post?text=" + t;
+          tweet.target = "_blank";
+          tweet.rel = "noopener";
+          tweet.textContent = "Post on X";
+          row.appendChild(dl);
+          row.appendChild(copy);
+          row.appendChild(tweet);
+          textResult.appendChild(row);
+          setTextStatus("Done.  ·  " + out.remaining + " of 1 free Text on me left today.");
+          // thumb (square) + full-resolution portrait -> Text on me gallery (fire and forget)
+          try {
+            await img.decode();
+            const th = document.createElement("canvas");
+            th.width = 384; th.height = 384;
+            th.getContext("2d").drawImage(img, 0, 0, 384, 384);
+            const pv = document.createElement("canvas");
+            pv.width = img.naturalWidth; pv.height = img.naturalHeight;
+            pv.getContext("2d").drawImage(img, 0, 0);
+            api("/api/text_gallery", {
+              image: th.toDataURL("image/jpeg", 0.8),
+              full: pv.toDataURL("image/jpeg", 0.85),
+              tokenId: selectedTokenId,
+              address: connectedAddress,
+              galleryToken: out.galleryToken,
+            }).then(() => loadGalleryInto("gallery_text", "tggrid", "gcolText")).catch(() => {});
+          } catch (e) {}
+        } catch (e) {
+          const m = String(e.message || "");
+          if (m.startsWith("daily_limit")) {
+            setTextStatus("Daily limit reached — 1 free Text on me per day. Come back tomorrow.", true);
+          } else if (m.startsWith("text_flagged")) {
+            setTextStatus("This text is not allowed — keep it friendly.", true);
+          } else if (m.startsWith("bad_text")) {
+            setTextStatus("Text is too long or has unsupported symbols (letters, numbers and basic punctuation only).", true);
+          } else if (m.startsWith("global_daily_limit")) {
+            setTextStatus("The service is at capacity for today — please come back tomorrow.", true);
+          } else {
+            setTextStatus("Generation failed: " + e.message, true);
+          }
+        } finally {
+          textBtn.disabled = !textInput.value.trim();
+        }
+      };
+
+      // ---- Lightbox ----
+      const lbOverlay = $("lbOverlay"), lbImg = $("lbImg");
+      let lbList = [], lbIdx = 0;
+      function openLightbox(src, list, idx) {
+        lbList = list || [src];
+        lbIdx = idx || 0;
+        lbImg.src = src;
+        lbOverlay.style.display = "flex";
+        requestAnimationFrame(() => requestAnimationFrame(() => lbOverlay.classList.add("in")));
+      }
+      function showLb(i) {
+        if (!lbList.length) return;
+        lbIdx = (i + lbList.length) % lbList.length;
+        lbImg.src = lbList[lbIdx];
+      }
+      function closeLightbox() {
+        lbOverlay.classList.remove("in");
+        setTimeout(() => { lbOverlay.style.display = "none"; lbImg.src = ""; lbList = []; }, 250);
+      }
+      lbOverlay.addEventListener("click", closeLightbox);
+      $("lbPrev").addEventListener("click", (e) => { e.stopPropagation(); showLb(lbIdx - 1); });
+      $("lbNext").addEventListener("click", (e) => { e.stopPropagation(); showLb(lbIdx + 1); });
+      document.addEventListener("keydown", (e) => {
+        if (lbOverlay.style.display !== "flex") return;
+        if (e.key === "Escape") closeLightbox();
+        else if (e.key === "ArrowRight") showLb(lbIdx + 1);
+        else if (e.key === "ArrowLeft") showLb(lbIdx - 1);
+      });
+
+      // ---- Community galleries (previews committed to the repo) ----
+      async function loadGalleryInto(folder, gridId, colId) {
+        try {
+          const r = await fetch(folder + "/index.json?_=" + Date.now());
+          if (!r.ok) return;
+          const items = await r.json();
+          if (!Array.isArray(items) || !items.length) return;
+          $("gallery").style.display = "flex";
+          if (colId) $(colId).style.display = "flex";
+          const g = $(gridId);
+          g.innerHTML = "";
+          items.forEach((it, i) => {
+            const a = document.createElement("a");
+            a.className = "gcell";
+            a.href = folder + "/" + it.f;
+            a.style.cursor = "zoom-in";
+            const im = document.createElement("img");
+            im.loading = "lazy";
+            im.src = folder + "/" + it.f;
+            im.alt = "Jean Phil community art";
+            a.appendChild(im);
+            a.addEventListener("click", (e) => {
+              e.preventDefault();
+              const full = items.map((x) => folder + "/" + (x.full || x.f));
+              openLightbox(full[i], full, i);
+            });
+            g.appendChild(a);
+          });
+        } catch (e) {}
+      }
+      function loadGallery() {
+        loadGalleryInto("gallery", "ggrid", null);
+        loadGalleryInto("gallery_text", "tggrid", "gcolText");
+      }
+      loadGallery();
+
+      // dev mode: ?dev_address=0x... skips wallet connect (local testing only)
+      const dev = new URLSearchParams(location.search).get("dev_address");
+      if (dev) {
+        connectedAddress = dev;
+        connectBtn.style.display = "none";
+        setStatus("Dev mode: " + dev.slice(0, 6) + "..." + dev.slice(-4));
+        loadNfts(dev);
+      }
+    </script>
+  </body>
+</html>

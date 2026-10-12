@@ -281,9 +281,26 @@
   </div>
 </section>
 
+<section id="gallery" style="display:none">
+  <div class="wrap">
+    <div class="sec-head"><h2>Community Gallery</h2><span class="num">02 / MADE BY HOLDERS</span></div>
+    <p class="step">Made by holders with the tools above</p>
+    <div class="gcols" style="margin-top:18px;">
+      <div class="gcol" id="gcolBanners">
+        <p class="gcol-title">Banners</p>
+        <div class="ggrid" id="ggrid"></div>
+      </div>
+      <div class="gcol" id="gcolText" style="display:none">
+        <p class="gcol-title">Text on me</p>
+        <div class="ggrid sq" id="tggrid"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
 <section>
   <div class="wrap">
-    <div class="sec-head"><h2>The Story</h2><span class="num">02 / ABOUT</span></div>
+    <div class="sec-head"><h2>The Story</h2><span class="num">03 / ABOUT</span></div>
     <div class="about-grid">
       <div>
         <p>Jean Phil began as a massive viral sensation on TikTok: an exaggerated, stylized French persona, clad in a distinctive striped suit, famous for his signature catchphrase «Oui Madame». The meme grew into a universe — and the universe became a collection of 2222 unique characters on Robinhood Chain.</p>
@@ -302,7 +319,7 @@
 
 <section style="background:#fafafa;">
   <div class="wrap">
-    <div class="sec-head"><h2>Meet the Jean Phils</h2><span class="num">03 / SHOWCASE</span></div>
+    <div class="sec-head"><h2>Meet the Jean Phils</h2><span class="num">04 / SHOWCASE</span></div>
     <div class="marquee">
       <div class="marquee-track" id="marqueeTrack"></div>
     </div>
@@ -312,7 +329,7 @@
 
 <section style="background:#fafafa;">
   <div class="wrap">
-    <div class="sec-head"><h2>OG Limited Drop</h2><span class="num">04 / LIMITED</span></div>
+    <div class="sec-head"><h2>OG Limited Drop</h2><span class="num">05 / LIMITED</span></div>
     <div class="og-strip">
       <img src="assets/og-v2.jpg" alt="OG Jean Phil">
       <div class="og-txt">
@@ -328,22 +345,7 @@
 
 
 
-<section id="gallery" style="display:none">
-  <div class="wrap">
-    <div class="sec-head"><h2>Community Gallery</h2><span class="num">05 / MADE BY HOLDERS</span></div>
-    <p class="step">Made by holders with the tools above</p>
-    <div class="gcols" style="margin-top:18px;">
-      <div class="gcol" id="gcolBanners">
-        <p class="gcol-title">Banners</p>
-        <div class="ggrid" id="ggrid"></div>
-      </div>
-      <div class="gcol" id="gcolText" style="display:none">
-        <p class="gcol-title">Text on me</p>
-        <div class="ggrid sq" id="tggrid"></div>
-      </div>
-    </div>
-  </div>
-</section>
+
 
 <section style="background:#fafafa;">
   <div class="wrap">
@@ -408,7 +410,7 @@
           let url = imgUrlCache.get(ipfsPath);
           if (!url) {
             const ctl = new AbortController();
-            const timer = setTimeout(() => ctl.abort(), 12000); // never wait on a dying gateway
+            const timer = setTimeout(() => ctl.abort(), 45000); // slow gateways can take ~30s; placeholder shows meanwhile
             const r = await fetch(API_BASE + "/api/img", {
               method: "POST",
               headers: { "Content-Type": "application/json" },

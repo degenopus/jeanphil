@@ -428,25 +428,30 @@
       // Falls back to a labeled placeholder so a cell is never an empty square.
       const imgUrlCache = new Map();
       async function loadNftImage(img, ipfsPath, tokenId) {
+        // placeholder first so a cell is never empty; upgrade when the proxy answers
+        const placeholder = "data:image/svg+xml;utf8," + encodeURIComponent(
+          '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400">' +
+          '<rect width="400" height="400" fill="#141414"/>' +
+          '<text x="200" y="215" font-family="monospace" font-size="52" fill="#ffffff" text-anchor="middle">#' + tokenId + '</text></svg>');
+        img.src = placeholder;
         try {
           let url = imgUrlCache.get(ipfsPath);
           if (!url) {
+            const ctl = new AbortController();
+            const timer = setTimeout(() => ctl.abort(), 12000); // never wait on a dying gateway
             const r = await fetch(API_BASE + "/api/img", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({ cid: ipfsPath }),
+              signal: ctl.signal,
             });
+            clearTimeout(timer);
             if (!r.ok) throw new Error("img " + r.status);
             url = URL.createObjectURL(await r.blob()); // same-origin blob: canvas stays clean
             imgUrlCache.set(ipfsPath, url);
           }
           img.src = url;
-        } catch (e) {
-          img.src = "data:image/svg+xml;utf8," + encodeURIComponent(
-            '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400">' +
-            '<rect width="400" height="400" fill="#141414"/>' +
-            '<text x="200" y="215" font-family="monospace" font-size="52" fill="#ffffff" text-anchor="middle">#' + tokenId + '</text></svg>');
-        }
+        } catch (e) { /* placeholder stays */ }
       }
 
       const API_BASE = ["localhost", "127.0.0.1"].includes(location.hostname)
@@ -1112,12 +1117,16 @@ import * as THREE from "three";
       // ipfs images go through the Worker proxy (gateway rotation + edge cache)
       const W = "https://jeanphil-banner.jeanphilnft.workers.dev";
       const viaProxy = async (cid) => {
-        const r = await fetch(W + "/api/img", {
-          method: "POST", headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ cid }),
-        });
-        if (!r.ok) throw new Error("img " + r.status);
-        return URL.createObjectURL(await r.blob());
+        const ctl = new AbortController();
+        const timer = setTimeout(() => ctl.abort(), 12000);
+        try {
+          const r = await fetch(W + "/api/img", {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ cid }), signal: ctl.signal,
+          });
+          if (!r.ok) throw new Error("img " + r.status);
+          return URL.createObjectURL(await r.blob());
+        } finally { clearTimeout(timer); }
       };
       const list = (d.tokens || []).slice(0, 40);
       const resolved = await Promise.all(list.map(async (t) => {

@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JEAN PHIL LABORATORY — mutate any NFT into a Jean Phil</title>
+<meta name="description" content="Enter the Jean Phil Laboratory. Connect your wallet, pick any NFT from your collection and mutate it — the iconic hairstyle and mustache, applied by the machine.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Archivo:wght@500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --purple: #7b4dff;
+    --purple-deep: #2a1650;
+    --green: #2be488;
+    --green-dim: #149e60;
+    --ink: #0b0714;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body {
+    background: radial-gradient(120% 90% at 50% 0%, #241243 0%, #150a28 45%, #0b0714 100%);
+    color:#efeaff;
+    font-family:'Archivo', system-ui, sans-serif;
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+  .mono { font-family:'Space Mono', monospace; }
+
+  /* ---------- falling sparks ---------- */
+  #sparks { position:fixed; inset:0; pointer-events:none; z-index:2; overflow:hidden; }
+  .spark {
+    position:absolute; top:-12px; border-radius:50%;
+    background:var(--green);
+    box-shadow:0 0 6px 1px rgba(43,228,136,.8);
+    animation:fall linear infinite, flicker ease-in-out infinite;
+    opacity:0;
+  }
+  .spark.violet { background:#a78bfa; box-shadow:0 0 6px 1px rgba(167,139,250,.8); }
+  @keyframes fall {
+    0% { transform:translateY(-4vh) translateX(0); opacity:0; }
+    8% { opacity:1; }
+    92% { opacity:.9; }
+    100% { transform:translateY(104vh) translateX(var(--drift)); opacity:0; }
+  }
+  @keyframes flicker {
+    0%,100% { filter:brightness(1); }
+    50% { filter:brightness(1.7); }
+  }
+
+  /* ---------- parallax capsules ---------- */
+  .lab-back { position:fixed; left:0; right:0; bottom:0; z-index:1; pointer-events:none; will-change:transform; }
+  .lab-back svg { display:block; width:100%; height:auto; }
+  #capsFar  { opacity:.45; filter:blur(1px); transform:translateY(14px) scale(1.04); }
+  #capsNear { margin-top:-4vw; }
+
+  /* bubbles inside capsules */
+  .bub { animation:rise ease-in infinite; }
+  @keyframes rise {
+    0% { transform:translateY(0); opacity:0; }
+    15% { opacity:.9; }
+    100% { transform:translateY(-72px); opacity:0; }
+  }
+  .glowpulse { animation:glowp 3.4s ease-in-out infinite; }
+  @keyframes glowp { 0%,100% { opacity:.55; } 50% { opacity:1; } }
+
+  /* ---------- layout ---------- */
+  .wrap { position:relative; z-index:5; max-width:1080px; margin:0 auto; padding:34px 20px 34vw; }
+  header.top { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+  .logo { font-family:'Space Mono',monospace; font-weight:700; letter-spacing:.18em; font-size:14px; color:#fff; text-decoration:none; }
+  .logo em { color:var(--green); font-style:normal; }
+  .btn {
+    display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    border:2px solid rgba(239,234,255,.85); color:#efeaff; background:transparent;
+    font-family:'Space Mono',monospace; font-size:12px; font-weight:700; letter-spacing:.14em; text-transform:uppercase;
+    padding:11px 22px; cursor:pointer; text-decoration:none;
+    transition:background .15s ease, color .15s ease, transform .12s ease, border-color .15s ease;
+  }
+  .btn:hover { background:#efeaff; color:#0b0714; }
+  .btn:disabled { opacity:.45; cursor:default; }
+  .btn:disabled:hover { background:transparent; color:#efeaff; }
+  .btn.solid { background:var(--green); border-color:var(--green); color:#06130c; }
+  .btn.solid:hover { background:#5ff2aa; border-color:#5ff2aa; }
+  .btn.solid:disabled:hover { background:var(--green); border-color:var(--green); color:#06130c; }
+
+  .hero { text-align:center; margin:56px 0 40px; }
+  .hero .kicker { font-family:'Space Mono',monospace; font-size:11px; letter-spacing:.34em; text-transform:uppercase; color:var(--green); }
+  .hero h1 {
+    font-weight:900; text-transform:uppercase; line-height:.95; letter-spacing:-.01em;
+    font-size:clamp(38px, 7.4vw, 86px); margin:14px 0 6px;
+    background:linear-gradient(100deg, #ffffff 20%, #b79bff 55%, var(--green) 90%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+  }
+  .hero p { max-width:620px; margin:14px auto 0; color:rgba(239,234,255,.72); font-size:14px; line-height:1.75; }
+
+  /* ---------- glass panel ---------- */
+  .panel {
+    position:relative;
+    border:1px solid rgba(167,139,250,.35);
+    background:linear-gradient(160deg, rgba(43,26,82,.72), rgba(16,8,32,.82));
+    backdrop-filter:blur(14px); -webkit-backdrop-filter:blur(14px);
+    box-shadow:0 30px 80px rgba(0,0,0,.55), inset 0 0 60px rgba(123,77,255,.12);
+    padding:30px 28px 34px;
+  }
+  .panel::before {
+    content:""; position:absolute; inset:0; pointer-events:none;
+    background:repeating-linear-gradient(0deg, rgba(255,255,255,.028) 0 1px, transparent 1px 4px);
+  }
+  .step-title { display:flex; align-items:baseline; justify-content:space-between; gap:10px; margin-bottom:18px; }
+  .step-title h2 { font-weight:900; text-transform:uppercase; letter-spacing:.06em; font-size:clamp(18px,3vw,26px); color:#fff; }
+  .step-title span { font-family:'Space Mono',monospace; font-size:10px; letter-spacing:.22em; color:rgba(239,234,255,.5); text-transform:uppercase; }
+  .status { font-family:'Space Mono',monospace; font-size:12px; margin:14px 0 0; color:var(--green); min-height:16px; }
+  .status.err { color:#ff7b9c; }
+
+  /* collections */
+  .cols { display:flex; flex-direction:column; gap:10px; margin-top:16px; }
+  .col-row {
+    display:grid; grid-template-columns:52px 1fr auto; align-items:center; gap:14px;
+    border:1px solid rgba(167,139,250,.28); background:rgba(11,7,20,.55);
+    padding:10px 14px; cursor:pointer; transition:border-color .15s ease, background .15s ease;
+  }
+  .col-row:hover, .col-row.sel { border-color:var(--green); background:rgba(43,228,136,.07); }
+  .col-row img { width:52px; height:52px; object-fit:cover; border:1px solid rgba(167,139,250,.4); background:#140b26; }
+  .col-row .nm { font-weight:700; font-size:14px; color:#fff; display:flex; align-items:center; gap:7px; flex-wrap:wrap; }
+  .col-row .nm .badge {
+    font-family:'Space Mono',monospace; font-size:9px; letter-spacing:.12em; color:#06130c;
+    background:var(--green); padding:2px 7px; text-transform:uppercase;
+  }
+  .col-row .meta { font-family:'Space Mono',monospace; font-size:10px; color:rgba(239,234,255,.55); margin-top:4px; letter-spacing:.06em; }
+  .col-row .floor { font-family:'Space Mono',monospace; font-size:12px; text-align:right; color:#d9ccff; }
+  .col-row .floor b { color:var(--green); }
+
+  .nfts { display:grid; grid-template-columns:repeat(auto-fill,minmax(104px,1fr)); gap:10px; margin-top:14px; }
+  .nft { position:relative; border:2px solid transparent; outline:1px solid rgba(167,139,250,.3); cursor:pointer; background:#140b26; aspect-ratio:1; overflow:hidden; transition:outline-color .15s ease; }
+  .nft img { width:100%; height:100%; object-fit:cover; display:block; }
+  .nft:hover { outline-color:#b79bff; }
+  .nft.sel { border-color:var(--green); outline-color:var(--green); box-shadow:0 0 18px rgba(43,228,136,.45); }
+  .nft .tg { position:absolute; left:0; right:0; bottom:0; font-family:'Space Mono',monospace; font-size:9px; padding:3px 5px; background:rgba(6,3,12,.82); color:#cfe9dd; letter-spacing:.05em; }
+
+  .mutwrap { text-align:center; margin-top:26px; }
+  .mutbtn {
+    font-family:'Space Mono',monospace; font-weight:700; text-transform:uppercase; letter-spacing:.2em;
+    font-size:15px; padding:16px 54px; cursor:pointer; color:#06130c;
+    background:linear-gradient(100deg, var(--green), #7bf0b6);
+    border:none; box-shadow:0 0 34px rgba(43,228,136,.4);
+    transition:transform .12s ease, box-shadow .15s ease;
+  }
+  .mutbtn:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 0 54px rgba(43,228,136,.65); }
+  .mutbtn:disabled { opacity:.4; cursor:default; }
+
+  .result { margin-top:26px; text-align:center; }
+  .result img { max-width:min(92vw,480px); width:100%; border:1px solid rgba(167,139,250,.5); box-shadow:0 24px 70px rgba(0,0,0,.6); display:block; margin:0 auto; }
+  .result .row { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:16px; }
+
+  .foot { margin-top:44px; text-align:center; font-family:'Space Mono',monospace; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:rgba(239,234,255,.4); }
+  .foot a { color:var(--green); text-decoration:none; }
+
+  /* wallet modal */
+  .wc-overlay { position:fixed; inset:0; background:rgba(5,2,10,.78); backdrop-filter:blur(6px); display:none; align-items:center; justify-content:center; z-index:50; padding:20px; }
+  .wc-overlay.open { display:flex; }
+  .wc-modal { width:min(420px, 94vw); border:1px solid rgba(167,139,250,.45); background:#150a28; box-shadow:0 40px 100px rgba(0,0,0,.7); }
+  .wc-head { display:flex; align-items:center; justify-content:space-between; padding:14px 18px; border-bottom:1px solid rgba(167,139,250,.3); font-family:'Space Mono',monospace; font-size:12px; letter-spacing:.18em; text-transform:uppercase; color:#fff; }
+  .wc-close { background:none; border:none; color:#efeaff; font-size:18px; cursor:pointer; }
+  #wcList { display:flex; flex-direction:column; }
+  .wc-item { display:flex; align-items:center; gap:12px; padding:13px 18px; background:none; border:none; border-bottom:1px solid rgba(167,139,250,.15); color:#efeaff; font-family:'Space Mono',monospace; font-size:13px; cursor:pointer; text-align:left; }
+  .wc-item:hover { background:rgba(123,77,255,.18); }
+  .wc-item img { width:26px; height:26px; border-radius:6px; }
+  .wc-note { padding:12px 18px; font-family:'Space Mono',monospace; font-size:10px; color:rgba(239,234,255,.55); line-height:1.6; }
+
+  @media (max-width: 640px) {
+    .wrap { padding-bottom:52vw; }
+    .col-row { grid-template-columns:44px 1fr; }
+    .col-row .floor { grid-column:2; text-align:left; }
+  }
+</style>
+</head>
+<body>
+
+<div id="sparks" aria-hidden="true"></div>
+
+<!-- parallax lab background: two layers of capsules, some broken -->
+<div class="lab-back" id="capsFar" aria-hidden="true">
+  <svg viewBox="0 0 1440 320" preserveAspectRatio="xMidYMax slice">
+    <defs>
+      <linearGradient id="lgGlassF" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#3b2a66" stop-opacity=".9"/>
+        <stop offset="1" stop-color="#17102c" stop-opacity=".95"/>
+      </linearGradient>
+      <linearGradient id="lgLiqF" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#2be488" stop-opacity=".85"/>
+        <stop offset="1" stop-color="#0f7a4a" stop-opacity=".9"/>
+      </linearGradient>
+    </defs>
+    <g>
+      <rect x="120" y="90" width="110" height="230" rx="55" fill="url(#lgGlassF)" stroke="#5b4396" stroke-width="3"/>
+      <path d="M120 190 a55 40 0 0 0 110 0 v85 a55 55 0 0 1 -110 0 z" fill="url(#lgLiqF)"/>
+      <rect x="300" y="40" width="130" height="280" rx="65" fill="url(#lgGlassF)" stroke="#5b4396" stroke-width="3"/>
+      <path d="M300 160 a65 48 0 0 0 130 0 v100 a65 65 0 0 1 -130 0 z" fill="url(#lgLiqF)"/>
+      <circle cx="355" cy="255" r="6" fill="#8ff7c4" class="bub" style="animation-duration:3.2s"/>
+      <circle cx="378" cy="280" r="4" fill="#8ff7c4" class="bub" style="animation-duration:2.4s;animation-delay:.7s"/>
+      <rect x="1050" y="70" width="120" height="250" rx="60" fill="url(#lgGlassF)" stroke="#5b4396" stroke-width="3"/>
+      <path d="M1050 175 a60 44 0 0 0 120 0 v90 a60 60 0 0 1 -120 0 z" fill="url(#lgLiqF)"/>
+      <rect x="1250" y="120" width="100" height="200" rx="50" fill="url(#lgGlassF)" stroke="#5b4396" stroke-width="3"/>
+      <path d="M1250 205 a50 36 0 0 0 100 0 v70 a50 50 0 0 1 -100 0 z" fill="url(#lgLiqF)"/>
+      <rect x="560" y="110" width="115" height="210" rx="57" fill="url(#lgGlassF)" stroke="#5b4396" stroke-width="3"/>
+      <path d="M560 200 a57 42 0 0 0 115 0 v80 a57 57 0 0 1 -115 0 z" fill="url(#lgLiqF)"/>
+      <rect x="760" y="60" width="125" height="260" rx="62" fill="url(#lgGlassF)" stroke="#5b4396" stroke-width="3"/>
+      <path d="M760 165 a62 46 0 0 0 125 0 v95 a62 62 0 0 1 -125 0 z" fill="url(#lgLiqF)"/>
+    </g>
+  </svg>
+</div>
+
+<div class="lab-back" id="capsNear" aria-hidden="true">
+  <svg viewBox="0 0 1440 300" preserveAspectRatio="xMidYMax slice">
+    <defs>
+      <linearGradient id="lgGlass" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#4b3583" stop-opacity=".95"/>
+        <stop offset="1" stop-color="#1c1236" stop-opacity=".98"/>
+      </linearGradient>
+      <linearGradient id="lgLiq" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#3dffa0" stop-opacity=".95"/>
+        <stop offset="1" stop-color="#0e8a52" stop-opacity=".95"/>
+      </linearGradient>
+      <linearGradient id="lgFloor" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0" stop-color="#221540"/>
+        <stop offset="1" stop-color="#0b0714"/>
+      </linearGradient>
+    </defs>
+    <rect x="0" y="268" width="1440" height="32" fill="url(#lgFloor)"/>
+    <!-- left intact capsule with silhouette -->
+    <g>
+      <rect x="60" y="30" width="150" height="270" rx="75" fill="url(#lgGlass)" stroke="#8a6fd6" stroke-width="4"/>
+      <path d="M60 140 a75 55 0 0 0 150 0 v90 a75 75 0 0 1 -150 0 z" fill="url(#lgLiq)"/>
+      <ellipse cx="135" cy="105" rx="86" ry="86" fill="#2be488" opacity=".14" class="glowpulse"/>
+      <!-- silhouette: head with iconic bob + shoulders -->
+      <g fill="#0a1f16" opacity=".85">
+        <path d="M135 62 c-26 0 -40 18 -40 40 c0 8 2 15 5 21 l-4 30 c-1 8 6 12 12 8 l9 -7 c4 3 11 5 18 5 s14 -2 18 -5 l9 7 c6 4 13 0 12 -8 l-4 -30 c3 -6 5 -13 5 -21 c0 -22 -14 -40 -40 -40 z"/>
+      </g>
+      <circle cx="112" cy="238" r="7" fill="#a9ffda" class="bub" style="animation-duration:2.8s"/>
+      <circle cx="152" cy="252" r="5" fill="#a9ffda" class="bub" style="animation-duration:2.1s;animation-delay:.5s"/>
+      <circle cx="134" cy="262" r="4" fill="#a9ffda" class="bub" style="animation-duration:3.5s;animation-delay:1.1s"/>
+    </g>
+    <!-- center-left tall capsule -->
+    <g>
+      <rect x="330" y="-20" width="140" height="320" rx="70" fill="url(#lgGlass)" stroke="#8a6fd6" stroke-width="4"/>
+      <path d="M330 110 a70 50 0 0 0 140 0 v120 a70 70 0 0 1 -140 0 z" fill="url(#lgLiq)"/>
+      <g fill="#0a1f16" opacity=".8">
+        <path d="M400 40 c-24 0 -37 16 -37 36 c0 8 2 14 5 20 l-4 27 c-1 7 6 11 11 7 l8 -6 c4 3 10 4 17 4 s13 -1 17 -4 l8 6 c5 4 12 0 11 -7 l-4 -27 c3 -6 5 -12 5 -20 c0 -20 -13 -36 -37 -36 z"/>
+      </g>
+      <circle cx="380" cy="250" r="6" fill="#a9ffda" class="bub" style="animation-duration:2.6s;animation-delay:.3s"/>
+      <circle cx="420" cy="268" r="8" fill="#a9ffda" class="bub" style="animation-duration:3.1s;animation-delay:1.4s"/>
+    </g>
+    <!-- BROKEN capsule: cracked glass, liquid spilled -->
+    <g>
+      <path d="M640 268 l0 -120 a75 60 0 0 1 30 -48 l22 18 l-14 26 l26 10 l-18 22 l20 18 l-26 14 l12 24 l-24 6 l6 30 z" fill="url(#lgGlass)" stroke="#8a6fd6" stroke-width="4"/>
+      <path d="M652 268 l0 -86 l18 8 l-8 20 l16 8 l-12 16 l14 12 l-16 10 l8 12 z" fill="url(#lgLiq)" opacity=".9"/>
+      <ellipse cx="730" cy="282" rx="86" ry="12" fill="#1ed884" opacity=".5"/>
+      <ellipse cx="742" cy="279" rx="40" ry="7" fill="#3dffa0" opacity=".55"/>
+      <circle cx="700" cy="270" r="5" fill="#a9ffda" class="bub" style="animation-duration:1.9s"/>
+      <circle cx="760" cy="274" r="4" fill="#a9ffda" class="bub" style="animation-duration:2.3s;animation-delay:.8s"/>
+      <path d="M676 130 l14 -22 M700 148 l20 -14" stroke="#b79bff" stroke-width="3" stroke-linecap="round" opacity=".7"/>
+    </g>
+    <!-- right capsule pair -->
+    <g>
+      <rect x="980" y="10" width="150" height="290" rx="75" fill="url(#lgGlass)" stroke="#8a6fd6" stroke-width="4"/>
+      <path d="M980 120 a75 55 0 0 0 150 0 v100 a75 75 0 0 1 -150 0 z" fill="url(#lgLiq)"/>
+      <g fill="#0a1f16" opacity=".85">
+        <path d="M1055 52 c-26 0 -40 18 -40 40 c0 8 2 15 5 21 l-4 30 c-1 8 6 12 12 8 l9 -7 c4 3 11 5 18 5 s14 -2 18 -5 l9 7 c6 4 13 0 12 -8 l-4 -30 c3 -6 5 -13 5 -21 c0 -22 -14 -40 -40 -40 z"/>
+      </g>
+      <circle cx="1030" cy="244" r="7" fill="#a9ffda" class="bub" style="animation-duration:3s;animation-delay:.2s"/>
+      <circle cx="1076" cy="258" r="5" fill="#a9ffda" class="bub" style="animation-duration:2.2s;animation-delay:1s"/>
+      <circle cx="1052" cy="266" r="4" fill="#a9ffda" class="bub" style="animation-duration:3.8s;animation-delay:1.8s"/>
+    </g>
+    <g>
+      <rect x="1240" y="70" width="120" height="230" rx="60" fill="url(#lgGlass)" stroke="#8a6fd6" stroke-width="4"/>
+      <path d="M1240 160 a60 44 0 0 0 120 0 v80 a60 60 0 0 1 -120 0 z" fill="url(#lgLiq)"/>
+      <circle cx="1280" cy="250" r="5" fill="#a9ffda" class="bub" style="animation-duration:2.5s;animation-delay:.6s"/>
+      <circle cx="1316" cy="262" r="6" fill="#a9ffda" class="bub" style="animation-duration:3.2s;animation-delay:1.5s"/>
+    </g>
+  </svg>
+</div>
+
+<div class="wrap">
+  <header class="top">
+    <a class="logo" href="/">JEAN<em>PHIL</em> <span style="opacity:.6">/ LAB</span></a>
+    <a class="btn" href="/">Back to site</a>
+  </header>
+
+  <div class="hero">
+    <div class="kicker">Secret facility · Specimen program</div>
+    <h1>Jean&nbsp;Phil<br>Laboratory</h1>
+    <p>Deep in the lab, the machine has perfected one procedure: the transplant of the iconic hairstyle and mustache onto any specimen. Connect your wallet, choose any NFT you own, and mutate it.</p>
+  </div>
+
+  <div class="panel">
+    <div class="step-title"><h2 id="panelTitle">Connect your wallet</h2><span id="panelStep">Step 1 / 3</span></div>
+
+    <div id="stageConnect" style="text-align:center; padding:26px 0 10px;">
+      <button class="btn solid" id="connectBtn" style="padding:15px 44px; font-size:13px;">Connect Wallet</button>
+      <p class="status" id="cStatus"></p>
+    </div>
+
+    <div id="stageCollections" style="display:none;">
+      <p class="status" id="colStatus"></p>
+      <div class="cols" id="colList"></div>
+    </div>
+
+    <div id="stageMutate" style="display:none;">
+      <div class="nfts" id="nftGrid"></div>
+      <div class="mutwrap">
+        <button class="mutbtn" id="mutateBtn" disabled>Mutate</button>
+        <p class="status" id="mutStatus"></p>
+      </div>
+      <div class="result" id="mutResult"></div>
+    </div>
+  </div>
+
+  <p class="foot">Experiments are limited to 5 mutations per wallet per day · <a href="/">jeanphil.art</a></p>
+</div>
+
+<div class="wc-overlay" id="wcOverlay">
+  <div class="wc-modal">
+    <div class="wc-head"><span>Connect Wallet</span><button class="wc-close" id="wcClose" aria-label="Close">&#10005;</button></div>
+    <div id="wcList"></div>
+    <p class="wc-note" id="wcNote"></p>
+  </div>
+</div>
+
+<script>
+const API = "https://jeanphil-banner.jeanphilnft.workers.dev";
+const $ = (id) => document.getElementById(id);
+
+async function api(path, body) {
+  const r = await fetch(API + path, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body || {}),
+  });
+  const data = await r.json().catch(() => ({}));
+  if (!r.ok) throw new Error(data.error || ("HTTP " + r.status));
+  return data;
+}
+
+/* ---------- falling sparks ---------- */
+(function () {
+  const box = $("sparks");
+  const N = 46;
+  for (let i = 0; i < N; i++) {
+    const s = document.createElement("div");
+    s.className = "spark" + (Math.random() < .3 ? " violet" : "");
+    const size = 1.5 + Math.random() * 3.2;
+    s.style.width = s.style.height = size + "px";
+    s.style.left = Math.random() * 100 + "vw";
+    s.style.setProperty("--drift", (Math.random() * 120 - 60) + "px");
+    s.style.animationDuration = (5 + Math.random() * 8) + "s, " + (0.8 + Math.random() * 1.6) + "s";
+    s.style.animationDelay = (-Math.random() * 12) + "s, " + (-Math.random() * 2) + "s";
+    box.appendChild(s);
+  }
+})();
+
+/* ---------- parallax on mouse ---------- */
+(function () {
+  const far = $("capsFar"), near = $("capsNear");
+  if (matchMedia("(pointer:coarse)").matches) return;
+  let tx = 0, ty = 0, cx = 0, cy = 0;
+  addEventListener("mousemove", (e) => {
+    tx = (e.clientX / innerWidth - .5);
+    ty = (e.clientY / innerHeight - .5);
+  });
+  (function loop() {
+    requestAnimationFrame(loop);
+    cx += (tx - cx) * .05;
+    cy += (ty - cy) * .05;
+    far.style.transform = "translate(" + (cx * -14) + "px," + (14 + cy * -6) + "px) scale(1.04)";
+    near.style.transform = "translate(" + (cx * 26) + "px," + (cy * 10) + "px)";
+  })();
+})();
+
+/* ---------- wallet discovery (EIP-6963 + fallbacks) ---------- */
+const injectedWallets = new Map();
+window.addEventListener("eip6963:announceProvider", (e) => {
+  injectedWallets.set(e.detail.info.uuid, e.detail);
+});
+window.dispatchEvent(new Event("eip6963:requestProvider"));
+
+let provider = null, address = null;
+let watchedProvider = null;
+
+function cStatus(m, err) {
+  $("cStatus").textContent = m || "";
+  $("cStatus").className = "status" + (err ? " err" : "");
+}
+
+function openWalletModal() {
+  const list = $("wcList");
+  list.innerHTML = "";
+  const wallets = [...injectedWallets.values()];
+  if (window.ethereum && !wallets.some((w) => w.provider === window.ethereum)) {
+    wallets.push({ info: { name: "Browser Wallet (MetaMask etc.)", icon: "" }, provider: window.ethereum });
+  }
+  if (window.phantom && window.phantom.ethereum &&
+      !wallets.some((w) => w.provider === window.phantom.ethereum)) {
+    wallets.push({ info: { name: "Phantom", icon: "" }, provider: window.phantom.ethereum });
+  }
+  const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  if (!wallets.length && isMobile) {
+    const mm = document.createElement("a");
+    mm.className = "wc-item";
+    mm.href = "https://metamask.app.link/dapp/" + location.host + location.pathname;
+    mm.textContent = "MetaMask (mobile)";
+    list.appendChild(mm);
+    const tw = document.createElement("a");
+    tw.className = "wc-item";
+    tw.href = "https://link.trustwallet.com/open_url?coin_id=60&url=" + encodeURIComponent("https://" + location.host + location.pathname);
+    tw.textContent = "Trust Wallet (mobile)";
+    list.appendChild(tw);
+    const ph = document.createElement("a");
+    ph.className = "wc-item";
+    ph.href = "https://phantom.app/ul/browse/" + encodeURIComponent("https://" + location.host + location.pathname);
+    ph.textContent = "Phantom (mobile)";
+    list.appendChild(ph);
+  } else if (!wallets.length) {
+    $("wcNote").textContent = "No wallet detected. Install MetaMask or another EVM wallet, then reload this page.";
+  }
+  wallets.forEach((w) => {
+    const b = document.createElement("button");
+    b.className = "wc-item";
+    if (w.info.icon) {
+      const ic = document.createElement("img");
+      ic.src = w.info.icon;
+      ic.alt = "";
+      b.appendChild(ic);
+    }
+    b.appendChild(document.createTextNode(w.info.name));
+    b.onclick = () => { closeModal(); connectWith(w.provider); };
+    list.appendChild(b);
+  });
+  $("wcOverlay").classList.add("open");
+}
+function closeModal() { $("wcOverlay").classList.remove("open"); }
+$("wcClose").onclick = closeModal;
+$("wcOverlay").addEventListener("click", (e) => { if (e.target === $("wcOverlay")) closeModal(); });
+
+async function connectWith(prov) {
+  try {
+    cStatus("Connecting...");
+    try {
+      await prov.request({ method: "wallet_revokePermissions", params: [{ eth_accounts: [] }] });
+    } catch (e) {}
+    const accounts = await prov.request({ method: "eth_requestAccounts" });
+    provider = prov;
+    address = accounts[0];
+    watchProvider(prov);
+    onConnected();
+  } catch (e) {
+    cStatus(e.message || "Connection failed", true);
+  }
+}
+
+function watchProvider(prov) {
+  if (watchedProvider === prov || !prov.on) return;
+  watchedProvider = prov;
+  prov.on("accountsChanged", (accs) => {
+    if (accs && accs[0]) { address = accs[0]; onConnected(); }
+  });
+  prov.on("disconnect", () => {
+    address = null;
+    location.reload();
+  });
+}
+
+$("connectBtn").onclick = openWalletModal;
+
+/* ---------- collections via the Worker (OpenSea: verified + floor sorted) ---------- */
+let collections = [];   // sorted list
+let selectedNft = null;
+
+async function loadCollections() {
+  $("panelTitle").textContent = "Choose a collection";
+  $("panelStep").textContent = "Step 2 / 3";
+  $("stageConnect").style.display = "none";
+  $("stageCollections").style.display = "block";
+  $("colStatus").textContent = "Scanning your wallet across chains…";
+  $("colStatus").className = "status";
+  try {
+    const d = await api("/api/collections", { address });
+    collections = d.collections || [];
+  } catch (e) {
+    $("colStatus").textContent = "Scan failed: " + (e.message || e) + " — try again in a minute.";
+    $("colStatus").className = "status err";
+    return;
+  }
+  if (!collections.length) {
+    $("colStatus").textContent = "No NFTs found on this wallet across the chains we scan (Ethereum, Base, Polygon, Arbitrum, Optimism, BNB, Avalanche, Zora).";
+    return;
+  }
+  renderCollections();
+}
+
+function renderCollections() {
+  $("colStatus").textContent = collections.length + " collections found — verified and highest-floor first:";
+  const box = $("colList");
+  box.innerHTML = "";
+  collections.forEach((g) => {
+    const row = document.createElement("div");
+    row.className = "col-row";
+    const img = document.createElement("img");
+    img.alt = "";
+    img.src = g.image || "data:image/svg+xml;utf8," + encodeURIComponent(
+      '<svg xmlns="http://www.w3.org/2000/svg" width="52" height="52"><rect width="52" height="52" fill="#221540"/><text x="26" y="33" font-family="monospace" font-size="20" fill="#8a6fd6" text-anchor="middle">?</text></svg>');
+    const mid = document.createElement("div");
+    const nm = document.createElement("div");
+    nm.className = "nm";
+    nm.textContent = g.name;
+    if (g.verified) {
+      const b = document.createElement("span");
+      b.className = "badge";
+      b.textContent = "Verified";
+      nm.appendChild(b);
+    }
+    const meta = document.createElement("div");
+    meta.className = "meta";
+    meta.textContent = g.chain + " · " + g.nfts.length + " item" + (g.nfts.length > 1 ? "s" : "");
+    mid.appendChild(nm);
+    mid.appendChild(meta);
+    const floor = document.createElement("div");
+    floor.className = "floor";
+    floor.innerHTML = g.floor != null ? ("FLOOR<br><b>" + (g.floor < 0.01 ? g.floor.toFixed(4) : g.floor.toFixed(3)) + " ETH</b>") : "FLOOR<br>—";
+    row.appendChild(img);
+    row.appendChild(mid);
+    row.appendChild(floor);
+    row.onclick = () => openCollection(g, row);
+    box.appendChild(row);
+  });
+}
+
+function openCollection(g, row) {
+  document.querySelectorAll(".col-row").forEach((r) => r.classList.remove("sel"));
+  row.classList.add("sel");
+  $("panelTitle").textContent = g.name;
+  $("panelStep").textContent = "Step 3 / 3";
+  $("stageCollections").style.display = "none";
+  $("stageMutate").style.display = "block";
+  selectedNft = null;
+  $("mutateBtn").disabled = true;
+  $("mutResult").innerHTML = "";
+  $("mutStatus").textContent = "Pick a specimen to mutate.";
+  $("mutStatus").className = "status";
+  const grid = $("nftGrid");
+  grid.innerHTML = "";
+  (g.nfts || []).slice(0, 60).forEach((n) => {
+    const cell = document.createElement("div");
+    cell.className = "nft";
+    const img = document.createElement("img");
+    img.loading = "lazy";
+    img.crossOrigin = "anonymous";
+    img.alt = n.name || ("#" + n.id);
+    img.src = n.img || "";
+    cell.appendChild(img);
+    const tg = document.createElement("div");
+    tg.className = "tg";
+    tg.textContent = "#" + n.id;
+    cell.appendChild(tg);
+    cell.onclick = () => {
+      grid.querySelectorAll(".nft").forEach((c) => c.classList.remove("sel"));
+      cell.classList.add("sel");
+      selectedNft = n;
+      $("mutateBtn").disabled = false;
+      $("mutStatus").textContent = "Specimen #" + n.id + " ready. Press MUTATE.";
+    };
+    grid.appendChild(cell);
+  });
+}
+
+/* ---------- mutation ---------- */
+$("mutateBtn").onclick = async () => {
+  if (!selectedNft) return;
+  const btn = $("mutateBtn");
+  btn.disabled = true;
+  $("mutStatus").textContent = "Specimen entering the chamber…";
+  $("mutStatus").className = "status";
+  $("mutResult").innerHTML = "";
+  try {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.src = selectedNft.img;
+    await img.decode();
+    const c = document.createElement("canvas");
+    c.width = img.naturalWidth;
+    c.height = img.naturalHeight;
+    c.getContext("2d").drawImage(img, 0, 0);
+    $("mutStatus").textContent = "Transplanting the hairstyle and mustache…";
+    const out = await api("/api/mutate", {
+      image: c.toDataURL("image/png"),
+      address,
+    });
+    const url = out.image;
+    const res = $("mutResult");
+    const im = document.createElement("img");
+    im.src = url;
+    im.alt = "Mutated Jean Phil";
+    res.appendChild(im);
+    const row = document.createElement("div");
+    row.className = "row";
+    const dl = document.createElement("a");
+    dl.className = "btn solid";
+    dl.textContent = "Download Specimen";
+    dl.download = "jeanphil-mutant.png";
+    dl.href = url;
+    const copy = document.createElement("button");
+    copy.className = "btn";
+    copy.textContent = "Copy Image";
+    copy.onclick = async () => {
+      try {
+        const blob = await (await fetch(url)).blob();
+        await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
+        $("mutStatus").textContent = "Copied — paste it into your post (Ctrl+V).";
+      } catch (e) {
+        $("mutStatus").textContent = "Copy failed — use Download.", true;
+      }
+    };
+    const tweet = document.createElement("a");
+    tweet.className = "btn";
+    tweet.href = "https://x.com/intent/post?text=" +
+      encodeURIComponent("My NFT went through the Jean Phil Laboratory \u{1F9EA} @jeanphil_nft #JeanPhil");
+    tweet.target = "_blank";
+    tweet.rel = "noopener";
+    tweet.textContent = "Post on X";
+    row.appendChild(dl);
+    row.appendChild(copy);
+    row.appendChild(tweet);
+    res.appendChild(row);
+    $("mutStatus").textContent = "Mutation complete." + (out.remaining != null ? " " + out.remaining + " of 5 experiments left today." : "");
+    btn.disabled = false;
+  } catch (e) {
+    const m = String(e.message || e);
+    if (m.startsWith("daily_limit")) {
+      $("mutStatus").textContent = "Daily limit reached — 5 mutations per wallet per day. The lab reopens tomorrow.";
+    } else if (m.startsWith("global_daily_limit")) {
+      $("mutStatus").textContent = "The lab is at full capacity today — come back tomorrow.";
+    } else {
+      $("mutStatus").textContent = "Mutation failed: " + m;
+    }
+    $("mutStatus").className = "status err";
+    btn.disabled = false;
+  }
+};
+
+function onConnected() {
+  $("connectBtn").textContent = address.slice(0, 6) + "..." + address.slice(-4);
+  cStatus("");
+  loadCollections();
+}
+
+/* dev mode: ?dev_address=0x... (local testing) */
+(function () {
+  const dev = new URLSearchParams(location.search).get("dev_address");
+  if (dev && /^0x[0-9a-fA-F]{40}$/.test(dev)) {
+    address = dev;
+    onConnected();
+  }
+})();
+</script>
+</body>
+</html>

@@ -155,6 +155,23 @@
   .foot { margin-top:44px; text-align:center; font-family:'Space Mono',monospace; font-size:10px; letter-spacing:.2em; text-transform:uppercase; color:rgba(239,234,255,.4); }
   .foot a { color:var(--green); text-decoration:none; }
 
+  /* ---------- specimen gallery ---------- */
+  .gal-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:10px; margin-top:18px; }
+  .gal-cell { position:relative; aspect-ratio:1; overflow:hidden; outline:1px solid rgba(167,139,250,.3); cursor:pointer; background:#140b26; }
+  .gal-cell img { width:100%; height:100%; object-fit:cover; display:block; transition:transform .25s ease; }
+  .gal-cell:hover { outline-color:var(--green); }
+  .gal-cell:hover img { transform:scale(1.06); }
+
+  /* lightbox with fade */
+  .lb { position:fixed; inset:0; z-index:80; display:flex; align-items:center; justify-content:center; background:rgba(5,2,10,0); opacity:0; pointer-events:none; transition:opacity .28s ease; }
+  .lb.open { background:rgba(5,2,10,.88); opacity:1; pointer-events:auto; }
+  .lb img { max-width:92vw; max-height:86vh; border:1px solid rgba(167,139,250,.5); box-shadow:0 40px 120px rgba(0,0,0,.8); }
+  .lb-btn { position:absolute; top:50%; transform:translateY(-50%); background:rgba(21,10,40,.85); border:1px solid rgba(167,139,250,.45); color:#efeaff; font-family:'Space Mono',monospace; font-size:18px; padding:10px 15px; cursor:pointer; }
+  .lb-btn:hover { border-color:var(--green); color:var(--green); }
+  #lbPrev { left:14px; } #lbNext { right:14px; }
+  #lbClose { position:absolute; top:14px; right:14px; transform:none; font-size:14px; }
+  .lb-count { position:absolute; bottom:16px; left:50%; transform:translateX(-50%); font-family:'Space Mono',monospace; font-size:11px; letter-spacing:.22em; color:rgba(239,234,255,.6); }
+
   /* wallet modal */
   .wc-overlay { position:fixed; inset:0; background:rgba(5,2,10,.78); backdrop-filter:blur(6px); display:none; align-items:center; justify-content:center; z-index:50; padding:20px; }
   .wc-overlay.open { display:flex; }
@@ -223,7 +240,23 @@
     </div>
   </div>
 
+  <section id="labGallery" style="display:none;">
+    <div class="panel">
+      <div class="step-title"><h2>Specimen Gallery</h2><span>Mutation log</span></div>
+      <p style="color:rgba(239,234,255,.62); font-size:13px; line-height:1.7;">Every successful mutation is archived here — click a specimen to inspect it.</p>
+      <div class="gal-grid" id="labGalGrid"></div>
+    </div>
+  </section>
+
   <p class="foot">Experiments are limited to 5 mutations per wallet per day · <a href="/">jeanphil.art</a></p>
+</div>
+
+<div class="lb" id="lb">
+  <img id="lbImg" alt="Mutated specimen">
+  <button class="lb-btn" id="lbPrev" aria-label="Previous">&#8592;</button>
+  <button class="lb-btn" id="lbNext" aria-label="Next">&#8594;</button>
+  <button class="lb-btn" id="lbClose" aria-label="Close">&#10005;</button>
+  <div class="lb-count" id="lbCount"></div>
 </div>
 
 <div class="wc-overlay" id="wcOverlay">
@@ -546,6 +579,29 @@ $("mutateBtn").onclick = async () => {
     row.appendChild(tweet);
     res.appendChild(row);
     $("mutStatus").textContent = "Mutation complete." + (out.remaining != null ? " " + out.remaining + " of 5 experiments left today." : "");
+    // archive the specimen to the gallery (fire and forget)
+    try {
+      const src = new Image();
+      src.onload = () => {
+        try {
+          const mk = (w, q) => {
+            const cc = document.createElement("canvas");
+            const k = Math.min(1, w / src.naturalWidth);
+            cc.width = Math.round(src.naturalWidth * k);
+            cc.height = Math.round(src.naturalHeight * k);
+            cc.getContext("2d").drawImage(src, 0, 0, cc.width, cc.height);
+            return cc.toDataURL("image/jpeg", q);
+          };
+          api("/api/lab_gallery", {
+            address,
+            image: mk(480, 0.82),
+            full: mk(1024, 0.9),
+            galleryToken: out.galleryToken,
+          }).then(() => loadLabGallery()).catch(() => {});
+        } catch (e) {}
+      };
+      src.src = url;
+    } catch (e) {}
     btn.disabled = false;
   } catch (e) {
     const m = String(e.message || e);
@@ -560,6 +616,54 @@ $("mutateBtn").onclick = async () => {
     btn.disabled = false;
   }
 };
+
+/* ---------- specimen gallery + lightbox ---------- */
+let labGal = [];
+async function loadLabGallery() {
+  try {
+    const r = await fetch("/gallery_lab/index.json?_=" + Date.now(), { cache: "no-store" });
+    if (!r.ok) return;
+    const m = await r.json();
+    if (!Array.isArray(m) || !m.length) return;
+    labGal = m;
+    const grid = $("labGalGrid");
+    grid.innerHTML = "";
+    m.forEach((en, i) => {
+      const cell = document.createElement("div");
+      cell.className = "gal-cell";
+      const img = document.createElement("img");
+      img.loading = "lazy";
+      img.alt = "Mutated specimen";
+      img.src = "/gallery_lab/" + en.f;
+      cell.appendChild(img);
+      cell.onclick = () => openLb(i);
+      grid.appendChild(cell);
+    });
+    $("labGallery").style.display = "block";
+  } catch (e) {}
+}
+loadLabGallery();
+
+let lbIdx = 0;
+function openLb(i) { lbIdx = i; renderLb(); $("lb").classList.add("open"); }
+function closeLb() { $("lb").classList.remove("open"); }
+function renderLb() {
+  const en = labGal[lbIdx];
+  if (!en) return closeLb();
+  $("lbImg").src = "/gallery_lab/" + (en.full || en.f);
+  $("lbCount").textContent = (lbIdx + 1) + " / " + labGal.length;
+}
+function stepLb(d) { lbIdx = (lbIdx + d + labGal.length) % labGal.length; renderLb(); }
+$("lbClose").onclick = closeLb;
+$("lbPrev").onclick = (e) => { e.stopPropagation(); stepLb(-1); };
+$("lbNext").onclick = (e) => { e.stopPropagation(); stepLb(1); };
+$("lb").addEventListener("click", (e) => { if (e.target === $("lb")) closeLb(); });
+addEventListener("keydown", (e) => {
+  if (!$("lb").classList.contains("open")) return;
+  if (e.key === "Escape") closeLb();
+  if (e.key === "ArrowLeft") stepLb(-1);
+  if (e.key === "ArrowRight") stepLb(1);
+});
 
 function onConnected() {
   $("connectBtn").textContent = address.slice(0, 6) + "..." + address.slice(-4);

@@ -75,8 +75,9 @@
   .card.invert p { color:rgba(255,255,255,.7); }
 
   /* laboratory banner */
-  .lab-banner { background:linear-gradient(115deg,#180d2e 0%,#241243 52%,#0f2c1d 135%); border-top:2px solid #000; border-bottom:2px solid #000; color:#fff; overflow:hidden; }
-  .lab-in { display:flex; align-items:center; gap:44px; flex-wrap:wrap; padding:46px 20px; max-width:1140px; margin:0 auto; }
+  .lab-banner { position:relative; border-top:2px solid #000; border-bottom:2px solid #000; color:#fff; overflow:hidden; background:url("/assets/lab-banner.jpg") center 30%/cover no-repeat; }
+  .lab-banner::before { content:""; position:absolute; inset:0; background:linear-gradient(100deg, rgba(11,6,22,.94) 0%, rgba(18,9,36,.78) 46%, rgba(10,6,18,.22) 100%); }
+  .lab-in { position:relative; z-index:1; display:flex; align-items:center; gap:44px; flex-wrap:wrap; padding:64px 20px; max-width:1140px; margin:0 auto; }
   .lab-txt { flex:1 1 340px; }
   .lab-kick { font-family:'Space Mono',monospace; font-size:10px; letter-spacing:.34em; text-transform:uppercase; color:#2be488; }
   .lab-txt h2 { font-family:'Archivo',sans-serif; font-size:clamp(30px,4.6vw,54px); font-weight:900; text-transform:uppercase; line-height:.98; margin:12px 0 12px; color:#fff; }
@@ -264,47 +265,6 @@
       <h2>Jean&nbsp;Phil <em>Laboratory</em></h2>
       <p>Deep underground, the machine has perfected a single procedure — the transplant of the iconic hairstyle and mustache onto any specimen. Bring any NFT you own and leave as one of us.</p>
       <a class="lab-cta" href="/laboratory/">Enter the Laboratory &#8594;</a>
-    </div>
-    <div class="lab-art">
-      <svg viewBox="0 0 400 300" aria-hidden="true">
-        <defs>
-          <linearGradient id="bGlass" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="#4b3583" stop-opacity=".95"/>
-            <stop offset="1" stop-color="#1c1236" stop-opacity=".98"/>
-          </linearGradient>
-          <linearGradient id="bLiq" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0" stop-color="#3dffa0" stop-opacity=".95"/>
-            <stop offset="1" stop-color="#0e8a52" stop-opacity=".95"/>
-          </linearGradient>
-        </defs>
-        <rect x="8" y="284" width="384" height="10" fill="#0b0714"/>
-        <!-- tall capsule -->
-        <g>
-          <rect x="40" y="20" width="120" height="268" rx="60" fill="url(#bGlass)" stroke="#8a6fd6" stroke-width="4"/>
-          <path d="M40 118 a60 46 0 0 0 120 0 v100 a60 60 0 0 1 -120 0 z" fill="url(#bLiq)"/>
-          <ellipse cx="100" cy="95" rx="70" ry="70" fill="#2be488" opacity=".15" class="lab-glow"/>
-          <g fill="#0a1f16" opacity=".85">
-            <path d="M100 46 c-24 0 -37 17 -37 38 c0 8 2 14 5 20 l-4 28 c-1 7 6 11 11 7 l8 -6 c4 3 10 4 17 4 s13 -1 17 -4 l8 6 c5 4 12 0 11 -7 l-4 -28 c3 -6 5 -12 5 -20 c0 -21 -13 -38 -37 -38 z"/>
-          </g>
-          <circle cx="78" cy="248" r="6" fill="#a9ffda" class="lab-bub" style="animation-duration:2.7s"/>
-          <circle cx="118" cy="262" r="4" fill="#a9ffda" class="lab-bub" style="animation-duration:2.1s;animation-delay:.6s"/>
-          <circle cx="98" cy="270" r="5" fill="#a9ffda" class="lab-bub" style="animation-duration:3.4s;animation-delay:1.2s"/>
-        </g>
-        <!-- broken capsule -->
-        <g>
-          <path d="M212 284 l0 -96 a52 42 0 0 1 22 -34 l16 14 l-10 20 l19 8 l-13 17 l15 13 l-18 10 l8 18 l-17 5 l4 25 z" fill="url(#bGlass)" stroke="#8a6fd6" stroke-width="4"/>
-          <path d="M222 284 l0 -70 l14 7 l-7 16 l12 7 l-9 12 l11 9 l-12 8 l6 11 z" fill="url(#bLiq)" opacity=".9"/>
-          <ellipse cx="286" cy="291" rx="60" ry="8" fill="#1ed884" opacity=".5"/>
-          <path d="M240 148 l11 -17 M258 162 l15 -11" stroke="#b79bff" stroke-width="3" stroke-linecap="round" opacity=".7"/>
-        </g>
-        <!-- small flask -->
-        <g>
-          <rect x="316" y="150" width="66" height="134" rx="33" fill="url(#bGlass)" stroke="#8a6fd6" stroke-width="4"/>
-          <path d="M316 208 a33 26 0 0 0 66 0 v42 a33 33 0 0 1 -66 0 z" fill="url(#bLiq)"/>
-          <circle cx="338" cy="258" r="4" fill="#a9ffda" class="lab-bub" style="animation-duration:2.4s;animation-delay:.4s"/>
-          <circle cx="358" cy="266" r="3" fill="#a9ffda" class="lab-bub" style="animation-duration:3s;animation-delay:1.4s"/>
-        </g>
-      </svg>
     </div>
   </div>
 </section>

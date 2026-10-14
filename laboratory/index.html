@@ -50,9 +50,9 @@
 
   /* ---------- parallax capsules ---------- */
   .lab-back { position:fixed; left:0; right:0; bottom:0; z-index:1; pointer-events:none; will-change:transform; }
-  .lab-back svg { display:block; width:100%; height:auto; }
-  #capsFar  { opacity:.45; filter:blur(1px); transform:translateY(14px) scale(1.04); }
-  #capsNear { margin-top:-4vw; }
+  .lab-back img { display:block; width:100%; height:auto; }
+  #capsFar  { filter:blur(3px) brightness(.55); transform:translateY(26px) scale(1.07); }
+  #capsNear { margin-top:-6vw; }
 
   /* bubbles inside capsules */
   .bub { animation:rise ease-in infinite; }
@@ -180,104 +180,11 @@
 
 <!-- parallax lab background: two layers of capsules, some broken -->
 <div class="lab-back" id="capsFar" aria-hidden="true">
-  <svg viewBox="0 0 1440 320" preserveAspectRatio="xMidYMax slice">
-    <defs>
-      <linearGradient id="lgGlassF" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#3b2a66" stop-opacity=".9"/>
-        <stop offset="1" stop-color="#17102c" stop-opacity=".95"/>
-      </linearGradient>
-      <linearGradient id="lgLiqF" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#2be488" stop-opacity=".85"/>
-        <stop offset="1" stop-color="#0f7a4a" stop-opacity=".9"/>
-      </linearGradient>
-    </defs>
-    <g>
-      <rect x="120" y="90" width="110" height="230" rx="55" fill="url(#lgGlassF)" stroke="#5b4396" stroke-width="3"/>
-      <path d="M120 190 a55 40 0 0 0 110 0 v85 a55 55 0 0 1 -110 0 z" fill="url(#lgLiqF)"/>
-      <rect x="300" y="40" width="130" height="280" rx="65" fill="url(#lgGlassF)" stroke="#5b4396" stroke-width="3"/>
-      <path d="M300 160 a65 48 0 0 0 130 0 v100 a65 65 0 0 1 -130 0 z" fill="url(#lgLiqF)"/>
-      <circle cx="355" cy="255" r="6" fill="#8ff7c4" class="bub" style="animation-duration:3.2s"/>
-      <circle cx="378" cy="280" r="4" fill="#8ff7c4" class="bub" style="animation-duration:2.4s;animation-delay:.7s"/>
-      <rect x="1050" y="70" width="120" height="250" rx="60" fill="url(#lgGlassF)" stroke="#5b4396" stroke-width="3"/>
-      <path d="M1050 175 a60 44 0 0 0 120 0 v90 a60 60 0 0 1 -120 0 z" fill="url(#lgLiqF)"/>
-      <rect x="1250" y="120" width="100" height="200" rx="50" fill="url(#lgGlassF)" stroke="#5b4396" stroke-width="3"/>
-      <path d="M1250 205 a50 36 0 0 0 100 0 v70 a50 50 0 0 1 -100 0 z" fill="url(#lgLiqF)"/>
-      <rect x="560" y="110" width="115" height="210" rx="57" fill="url(#lgGlassF)" stroke="#5b4396" stroke-width="3"/>
-      <path d="M560 200 a57 42 0 0 0 115 0 v80 a57 57 0 0 1 -115 0 z" fill="url(#lgLiqF)"/>
-      <rect x="760" y="60" width="125" height="260" rx="62" fill="url(#lgGlassF)" stroke="#5b4396" stroke-width="3"/>
-      <path d="M760 165 a62 46 0 0 0 125 0 v95 a62 62 0 0 1 -125 0 z" fill="url(#lgLiqF)"/>
-    </g>
-  </svg>
+  <img src="/assets/lab-floor.jpg" alt="">
 </div>
 
 <div class="lab-back" id="capsNear" aria-hidden="true">
-  <svg viewBox="0 0 1440 300" preserveAspectRatio="xMidYMax slice">
-    <defs>
-      <linearGradient id="lgGlass" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#4b3583" stop-opacity=".95"/>
-        <stop offset="1" stop-color="#1c1236" stop-opacity=".98"/>
-      </linearGradient>
-      <linearGradient id="lgLiq" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#3dffa0" stop-opacity=".95"/>
-        <stop offset="1" stop-color="#0e8a52" stop-opacity=".95"/>
-      </linearGradient>
-      <linearGradient id="lgFloor" x1="0" y1="0" x2="0" y2="1">
-        <stop offset="0" stop-color="#221540"/>
-        <stop offset="1" stop-color="#0b0714"/>
-      </linearGradient>
-    </defs>
-    <rect x="0" y="268" width="1440" height="32" fill="url(#lgFloor)"/>
-    <!-- left intact capsule with silhouette -->
-    <g>
-      <rect x="60" y="30" width="150" height="270" rx="75" fill="url(#lgGlass)" stroke="#8a6fd6" stroke-width="4"/>
-      <path d="M60 140 a75 55 0 0 0 150 0 v90 a75 75 0 0 1 -150 0 z" fill="url(#lgLiq)"/>
-      <ellipse cx="135" cy="105" rx="86" ry="86" fill="#2be488" opacity=".14" class="glowpulse"/>
-      <!-- silhouette: head with iconic bob + shoulders -->
-      <g fill="#0a1f16" opacity=".85">
-        <path d="M135 62 c-26 0 -40 18 -40 40 c0 8 2 15 5 21 l-4 30 c-1 8 6 12 12 8 l9 -7 c4 3 11 5 18 5 s14 -2 18 -5 l9 7 c6 4 13 0 12 -8 l-4 -30 c3 -6 5 -13 5 -21 c0 -22 -14 -40 -40 -40 z"/>
-      </g>
-      <circle cx="112" cy="238" r="7" fill="#a9ffda" class="bub" style="animation-duration:2.8s"/>
-      <circle cx="152" cy="252" r="5" fill="#a9ffda" class="bub" style="animation-duration:2.1s;animation-delay:.5s"/>
-      <circle cx="134" cy="262" r="4" fill="#a9ffda" class="bub" style="animation-duration:3.5s;animation-delay:1.1s"/>
-    </g>
-    <!-- center-left tall capsule -->
-    <g>
-      <rect x="330" y="-20" width="140" height="320" rx="70" fill="url(#lgGlass)" stroke="#8a6fd6" stroke-width="4"/>
-      <path d="M330 110 a70 50 0 0 0 140 0 v120 a70 70 0 0 1 -140 0 z" fill="url(#lgLiq)"/>
-      <g fill="#0a1f16" opacity=".8">
-        <path d="M400 40 c-24 0 -37 16 -37 36 c0 8 2 14 5 20 l-4 27 c-1 7 6 11 11 7 l8 -6 c4 3 10 4 17 4 s13 -1 17 -4 l8 6 c5 4 12 0 11 -7 l-4 -27 c3 -6 5 -12 5 -20 c0 -20 -13 -36 -37 -36 z"/>
-      </g>
-      <circle cx="380" cy="250" r="6" fill="#a9ffda" class="bub" style="animation-duration:2.6s;animation-delay:.3s"/>
-      <circle cx="420" cy="268" r="8" fill="#a9ffda" class="bub" style="animation-duration:3.1s;animation-delay:1.4s"/>
-    </g>
-    <!-- BROKEN capsule: cracked glass, liquid spilled -->
-    <g>
-      <path d="M640 268 l0 -120 a75 60 0 0 1 30 -48 l22 18 l-14 26 l26 10 l-18 22 l20 18 l-26 14 l12 24 l-24 6 l6 30 z" fill="url(#lgGlass)" stroke="#8a6fd6" stroke-width="4"/>
-      <path d="M652 268 l0 -86 l18 8 l-8 20 l16 8 l-12 16 l14 12 l-16 10 l8 12 z" fill="url(#lgLiq)" opacity=".9"/>
-      <ellipse cx="730" cy="282" rx="86" ry="12" fill="#1ed884" opacity=".5"/>
-      <ellipse cx="742" cy="279" rx="40" ry="7" fill="#3dffa0" opacity=".55"/>
-      <circle cx="700" cy="270" r="5" fill="#a9ffda" class="bub" style="animation-duration:1.9s"/>
-      <circle cx="760" cy="274" r="4" fill="#a9ffda" class="bub" style="animation-duration:2.3s;animation-delay:.8s"/>
-      <path d="M676 130 l14 -22 M700 148 l20 -14" stroke="#b79bff" stroke-width="3" stroke-linecap="round" opacity=".7"/>
-    </g>
-    <!-- right capsule pair -->
-    <g>
-      <rect x="980" y="10" width="150" height="290" rx="75" fill="url(#lgGlass)" stroke="#8a6fd6" stroke-width="4"/>
-      <path d="M980 120 a75 55 0 0 0 150 0 v100 a75 75 0 0 1 -150 0 z" fill="url(#lgLiq)"/>
-      <g fill="#0a1f16" opacity=".85">
-        <path d="M1055 52 c-26 0 -40 18 -40 40 c0 8 2 15 5 21 l-4 30 c-1 8 6 12 12 8 l9 -7 c4 3 11 5 18 5 s14 -2 18 -5 l9 7 c6 4 13 0 12 -8 l-4 -30 c3 -6 5 -13 5 -21 c0 -22 -14 -40 -40 -40 z"/>
-      </g>
-      <circle cx="1030" cy="244" r="7" fill="#a9ffda" class="bub" style="animation-duration:3s;animation-delay:.2s"/>
-      <circle cx="1076" cy="258" r="5" fill="#a9ffda" class="bub" style="animation-duration:2.2s;animation-delay:1s"/>
-      <circle cx="1052" cy="266" r="4" fill="#a9ffda" class="bub" style="animation-duration:3.8s;animation-delay:1.8s"/>
-    </g>
-    <g>
-      <rect x="1240" y="70" width="120" height="230" rx="60" fill="url(#lgGlass)" stroke="#8a6fd6" stroke-width="4"/>
-      <path d="M1240 160 a60 44 0 0 0 120 0 v80 a60 60 0 0 1 -120 0 z" fill="url(#lgLiq)"/>
-      <circle cx="1280" cy="250" r="5" fill="#a9ffda" class="bub" style="animation-duration:2.5s;animation-delay:.6s"/>
-      <circle cx="1316" cy="262" r="6" fill="#a9ffda" class="bub" style="animation-duration:3.2s;animation-delay:1.5s"/>
-    </g>
-  </svg>
+  <img src="/assets/lab-floor.jpg" alt="">
 </div>
 
 <div class="wrap">
@@ -306,6 +213,7 @@
     </div>
 
     <div id="stageMutate" style="display:none;">
+      <button class="btn" id="backToCols" style="margin-bottom:16px;">&#8592; Back to collections</button>
       <div class="nfts" id="nftGrid"></div>
       <div class="mutwrap">
         <button class="mutbtn" id="mutateBtn" disabled>Mutate</button>
@@ -540,8 +448,7 @@ function openCollection(g, row) {
   $("panelTitle").textContent = g.name;
   $("panelStep").textContent = "Step 3 / 3";
   $("stageCollections").style.display = "none";
-  $("stageMutate").style.display = "block";
-  selectedNft = null;
+  $("stageMutate").style.display = "block";  selectedNft = null;
   $("mutateBtn").disabled = true;
   $("mutResult").innerHTML = "";
   $("mutStatus").textContent = "Pick a specimen to mutate.";
@@ -571,6 +478,14 @@ function openCollection(g, row) {
     grid.appendChild(cell);
   });
 }
+
+$("backToCols").onclick = () => {
+  $("stageMutate").style.display = "none";
+  $("stageCollections").style.display = "block";
+  $("panelTitle").textContent = "Choose a collection";
+  $("panelStep").textContent = "Step 2 / 3";
+  renderCollections();
+};
 
 /* ---------- mutation ---------- */
 $("mutateBtn").onclick = async () => {

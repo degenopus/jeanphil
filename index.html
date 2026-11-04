@@ -258,7 +258,7 @@
   <a class="btn solid" style="padding:14px 32px; font-size:14px;" href="https://opensea.io/collection/jeanphil-nft" target="_blank" rel="noopener">Get your Jean Phil on OpenSea</a>
 </div>
 
-<section class="lab-banner">
+<section class="lab-banner" style="display:none">
   <div class="lab-in">
     <div class="lab-txt">
       <div class="lab-kick">Specimen program · Now open</div>
@@ -281,10 +281,10 @@
       </div>
       <div class="tool-cards">
         <div class="tool-card"><div><h4>Banner Maker</h4><p>Turn your Jean Phil into a Twitter banner · 3 free per day</p></div><span class="lock">Holders</span></div>
-        <div class="tool-card"><div><h4>Text on me</h4><p>Write anything across your Jean Phil's face · 1 free per day</p></div><span class="lock">Holders</span></div>
+        <div class="tool-card" style="display:none"><div><h4>Text on me</h4><p>Write anything across your Jean Phil's face · 1 free per day</p></div><span class="lock">Holders</span></div>
         <div class="tool-card"><div><h4>3D Showroom</h4><p>Walk the FW'26 collection in a 3D gallery — your Jean Phil hangs on the wall</p></div><span class="lock">Holders</span></div>
         <div class="tool-card"><div><h4>Private Chat & Rewards</h4><p>Holders-only X chat, contests and activity rewards</p></div><span class="lock">Holders</span></div>
-        <div class="tool-card"><div><h4>Meme Machine</h4><p>AI writes demotivator memes on your Jean Phil — absurd, sharp, very crypto · 5 free per day</p></div><span class="lock">Holders</span></div>
+        <div class="tool-card" style="display:none"><div><h4>Meme Machine</h4><p>AI writes demotivator memes on your Jean Phil — absurd, sharp, very crypto · 5 free per day</p></div><span class="lock">Holders</span></div>
       </div>
     </div>
 
@@ -308,7 +308,7 @@
             websites attach images automatically. Crop it however you like.
           </p>
         </div>
-        <div class="tool">
+        <div class="tool" style="display:none">
           <h3>Text on me</h3>
           <p class="tool-sub">Write anything across your Jean Phil&rsquo;s face &middot; 1 free per day</p>
           <input class="tinput" id="textInput" maxlength="40" placeholder="WRITE ANYTHING" autocomplete="off" />
@@ -316,7 +316,7 @@
           <p class="status" id="textStatus"></p>
           <div class="result" id="textResult"></div>
         </div>
-        <div class="tool">
+        <div class="tool" style="display:none">
           <h3>Meme Machine</h3>
           <p class="tool-sub">The machine studies your Jean Phil and writes a demotivator meme &middot; 5 free per day</p>
           <button class="btn" id="memeBtn" style="display:none">Meme It</button>
@@ -337,7 +337,7 @@
         <p class="gcol-title">Banners</p>
         <div class="ggrid" id="ggrid"></div>
       </div>
-      <div class="gcol" id="gcolText" style="display:none">
+      <div class="gcol" id="gcolText" style="display:none !important">
         <p class="gcol-title">Text on me</p>
         <div class="ggrid sq" id="tggrid"></div>
       </div>
@@ -345,7 +345,7 @@
   </div>
 </section>
 
-<section id="memeGallery" style="display:none">
+<section id="memeGallery" style="display:none !important">
   <div class="wrap">
     <div class="sec-head"><h2>Meme Gallery</h2><span class="num">03 / MEMES</span></div>
     <p class="step">Demotivators by the machine and the gang — fresh ones drop daily</p>

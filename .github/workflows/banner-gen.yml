@@ -1,0 +1,39 @@
+name: banner-gen
+# Generates Jean Phil banners via OpenAI on a GitHub-hosted runner
+# (US egress — OpenAI is reachable from here). Triggered by the
+# Cloudflare Worker through repository_dispatch with { request_id }.
+on:
+  repository_dispatch:
+    types: [banner-gen]
+
+permissions:
+  contents: write
+
+jobs:
+  gen:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Generate image via OpenAI
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          REQ_ID: ${{ github.event.client_payload.request_id }}
+        run: node .github/banner-gen.js
+
+      - name: Commit result
+        env:
+          REQ_ID: ${{ github.event.client_payload.request_id }}
+        run: |
+          git config user.name "jp-banner-gen"
+          git config user.email "actions@jeanphil.art"
+          git add "banner-out/${REQ_ID}.json"
+          git rm -q --cached "banner-req/${REQ_ID}.json" 2>/dev/null || true
+          rm -f "banner-req/${REQ_ID}.json"
+          for i in 1 2 3; do
+            git pull --rebase --autostash origin main && break || sleep 3
+          done
+          git commit -m "banner-gen result ${REQ_ID}" && git push origin main

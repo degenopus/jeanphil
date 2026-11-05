@@ -793,7 +793,7 @@
         if (!selected) return;
         genBtn.disabled = true;
         result.innerHTML = '<div class="spinner"></div>';
-        setStatus("Generating your banner... this takes about a minute.");
+        setStatus("Generating your banner... this takes 2\u20135 minutes, hang tight.");
         try {
           await selected.decode();
           // plain original image -> model paints the scene around the character
@@ -866,6 +866,8 @@
             setStatus("This sign text is not allowed — keep it friendly.", true);
           } else if (String(e.message).startsWith("bad_text")) {
             setStatus("Sign text is too long or has unsupported symbols (letters, numbers and basic punctuation only).", true);
+          } else if (String(e.message).startsWith("gen_timeout")) {
+            setStatus("Generation is taking too long on the free runner \u2014 nothing was charged. Wait a few minutes and press Generate again.", true);
           } else {
             setStatus("Generation failed: " + e.message, true);
           }

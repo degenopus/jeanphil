@@ -2,24 +2,30 @@
 // Reads the request written by the Cloudflare Worker (banner-req/<id>.json),
 // calls OpenAI images/edits (runner egress reaches OpenAI), writes the
 // result to banner-out/<id>.json. The workflow then commits both changes.
+//
+// Modes:
+//  - repository_dispatch (REQ_ID set): process that request fast-path,
+//    then sweep any other pending requests as a safety net.
+//  - schedule / workflow_dispatch (no REQ_ID): sweep all pending requests.
+//    This rescues requests whose dispatch never turned into a run.
 const fs = require("fs");
 const https = require("https");
 const path = require("path");
 
 const reqId = process.env.REQ_ID;
-const reqPath = path.join("banner-req", reqId + ".json");
-const outPath = path.join("banner-out", reqId + ".json");
 
-function writeOut(obj) {
+const MAX_PER_RUN = 3; // stay well inside free runner minutes
+
+function writeOut(id, obj) {
   fs.mkdirSync("banner-out", { recursive: true });
-  fs.writeFileSync(outPath, JSON.stringify(obj));
+  fs.writeFileSync(path.join("banner-out", id + ".json"), JSON.stringify(obj));
 }
 
 function b64ToBuffer(dataUrl) {
   return Buffer.from(dataUrl.split(",")[1], "base64");
 }
 
-function postOpenAI(form, model) {
+function postOpenAI(form) {
   return new Promise((resolve, reject) => {
     const boundary = "----jpboundary" + Date.now();
     const parts = [];
@@ -55,9 +61,15 @@ function postOpenAI(form, model) {
   });
 }
 
-(async () => {
+async function processOne(id) {
+  const reqPath = path.join("banner-req", id + ".json");
+  let req;
   try {
-    const req = JSON.parse(fs.readFileSync(reqPath, "utf8"));
+    req = JSON.parse(fs.readFileSync(reqPath, "utf8"));
+  } catch (e) {
+    return; // file gone or broken — nothing to do
+  }
+  try {
     const form = new Map();
     form.set("prompt", { value: req.prompt });
     form.set("size", { value: req.size || "1024x1024" });
@@ -72,20 +84,35 @@ function postOpenAI(form, model) {
     for (const model of models) {
       const f = new Map(form);
       f.set("model", { value: model });
-      const r = await postOpenAI(f, model);
+      const r = await postOpenAI(f);
       if (r.status === 200) {
         const d = JSON.parse(r.body);
-        writeOut({ ok: true, image: "data:image/png;base64," + d.data[0].b64_json, model });
-        console.log("ok with model", model);
+        writeOut(id, { ok: true, image: "data:image/png;base64," + d.data[0].b64_json, model });
+        console.log("ok", id, "with model", model);
         return;
       }
       const modelProblem = r.status === 404 || /model|not found|does not exist/i.test(r.body.slice(0, 300));
       lastErr = r.status + ":" + r.body.slice(0, 300);
       if (!modelProblem) break; // real error (content, rate) — don't try other models
     }
-    writeOut({ ok: false, error: lastErr });
-    process.exitCode = 0; // result file carries the error; workflow stays green so it commits
+    writeOut(id, { ok: false, error: lastErr });
   } catch (e) {
-    writeOut({ ok: false, error: String(e.message || e) });
+    writeOut(id, { ok: false, error: String(e.message || e) });
   }
+}
+
+(async () => {
+  const ids = [];
+  if (reqId) ids.push(reqId);
+  const dir = "banner-req";
+  if (fs.existsSync(dir)) {
+    for (const f of fs.readdirSync(dir).sort()) {
+      const m = f.match(/^([a-z0-9]+)\.json$/i);
+      if (m && !ids.includes(m[1])) ids.push(m[1]);
+    }
+  }
+  const todo = ids.slice(0, MAX_PER_RUN);
+  for (const id of todo) await processOne(id);
+  fs.writeFileSync("processed_ids.txt", todo.join("\n"));
+  console.log("processed:", todo.join(",") || "(none)");
 })();

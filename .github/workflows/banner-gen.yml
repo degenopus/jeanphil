@@ -2,9 +2,14 @@ name: banner-gen
 # Generates Jean Phil banners via OpenAI on a GitHub-hosted runner
 # (US egress — OpenAI is reachable from here). Triggered by the
 # Cloudflare Worker through repository_dispatch with { request_id }.
+# The schedule is a safety net: it sweeps any request whose dispatch
+# never turned into a run, so a lost dispatch no longer means a lost job.
 on:
   repository_dispatch:
     types: [banner-gen]
+  schedule:
+    - cron: '*/6 * * * *'
+  workflow_dispatch:
 
 permissions:
   contents: write
@@ -12,28 +17,37 @@ permissions:
 jobs:
   gen:
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 1
 
-      - name: Generate image via OpenAI
+      - name: Generate image(s) via OpenAI
         env:
           OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
           REQ_ID: ${{ github.event.client_payload.request_id }}
         run: node .github/banner-gen.js
 
-      - name: Commit result
-        env:
-          REQ_ID: ${{ github.event.client_payload.request_id }}
+      - name: Commit result(s)
         run: |
           git config user.name "jp-banner-gen"
           git config user.email "actions@jeanphil.art"
-          git add "banner-out/${REQ_ID}.json"
-          git rm -q --cached "banner-req/${REQ_ID}.json" 2>/dev/null || true
-          rm -f "banner-req/${REQ_ID}.json"
+          any=0
+          while read -r id; do
+            [ -z "$id" ] && continue
+            if [ -f "banner-out/${id}.json" ]; then
+              git add "banner-out/${id}.json"
+              any=1
+            fi
+            git rm -q --cached "banner-req/${id}.json" 2>/dev/null || true
+            rm -f "banner-req/${id}.json"
+          done < processed_ids.txt
+          if [ "$any" = "0" ]; then
+            echo "nothing to commit"
+            exit 0
+          fi
           for i in 1 2 3; do
             git pull --rebase --autostash origin main && break || sleep 3
           done
-          git commit -m "banner-gen result ${REQ_ID}" && git push origin main
+          git commit -m "banner-gen results" && git push origin main

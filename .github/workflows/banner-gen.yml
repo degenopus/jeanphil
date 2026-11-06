@@ -8,7 +8,7 @@ on:
   repository_dispatch:
     types: [banner-gen]
   schedule:
-    - cron: '*/6 * * * *'
+    - cron: '*/5 * * * *'
   workflow_dispatch:
 
 permissions:

@@ -297,24 +297,12 @@
           <h3>Banner Maker</h3>
           <p class="tool-sub">Your Jean Phil becomes a Twitter banner · 3 free per day</p>
           <button class="btn" id="genBtn" style="display:none">Generate My Banner</button>
-          <input class="tinput" id="labelInput" maxlength="40" placeholder="ROOM SIGN TEXT (OPTIONAL)" autocomplete="off" style="display:none" />
-          <p class="tool-sub" id="labelSub" style="display:none; margin:0">
-            Leave empty for &ldquo;Jean Phil NFT&rdquo; in the scene · or write your own text for the room
-          </p>
           <div class="result" id="result"></div>
           <p class="hint" id="hint" style="display:none">
             The post text is pre-filled. Press Copy Image, then paste the banner
             straight into your post (Ctrl+V / long-press) &mdash; X doesn&rsquo;t let
             websites attach images automatically. Crop it however you like.
           </p>
-        </div>
-        <div class="tool" style="display:none">
-          <h3>Text on me</h3>
-          <p class="tool-sub">Write anything across your Jean Phil&rsquo;s face &middot; 1 free per day</p>
-          <input class="tinput" id="textInput" maxlength="40" placeholder="WRITE ANYTHING" autocomplete="off" />
-          <button class="btn" id="textBtn" disabled>Write It</button>
-          <p class="status" id="textStatus"></p>
-          <div class="result" id="textResult"></div>
         </div>
         <div class="tool" style="display:none">
           <h3>Meme Machine</h3>
@@ -337,25 +325,13 @@
         <p class="gcol-title">Banners</p>
         <div class="ggrid" id="ggrid"></div>
       </div>
-      <div class="gcol" id="gcolText" style="display:none !important">
-        <p class="gcol-title">Text on me</p>
-        <div class="ggrid sq" id="tggrid"></div>
-      </div>
     </div>
-  </div>
-</section>
-
-<section id="memeGallery" style="display:none !important">
-  <div class="wrap">
-    <div class="sec-head"><h2>Meme Gallery</h2><span class="num">03 / MEMES</span></div>
-    <p class="step">Demotivators by the machine and the gang — fresh ones drop daily</p>
-    <div class="meme-grid" id="memeGrid" style="margin-top:18px;"></div>
   </div>
 </section>
 
 <section>
   <div class="wrap">
-    <div class="sec-head"><h2>The Story</h2><span class="num">04 / ABOUT</span></div>
+    <div class="sec-head"><h2>The Story</h2><span class="num">03 / ABOUT</span></div>
     <div class="about-grid">
       <div>
         <p>Jean Phil began as a massive viral sensation on TikTok: an exaggerated, stylized French persona, clad in a distinctive striped suit, famous for his signature catchphrase «Oui Madame». The meme grew into a universe — and the universe became a collection of 2222 unique characters on Robinhood Chain.</p>
@@ -430,12 +406,6 @@
       <button class="lb-nav next" id="lbNext" aria-label="Next">&#8594;</button>
     </div>
 
-    <div class="meme-overlay" id="memeOverlay">
-      <img id="memeOvImg" alt="Jean Phil meme">
-      <div class="mrow">
-        <a class="btn" id="memeOvDl" download="jeanphil-meme.png">Download PNG</a>
-        <button class="btn" id="memeOvClose">Close</button>
-      </div>
     </div>
 
 <script>
@@ -773,8 +743,6 @@
               selected = cell.querySelector("img");
               selectedTokenId = t.tokenId;
               genBtn.style.display = "inline-flex";
-              $("labelInput").style.display = "block";
-              $("labelSub").style.display = "block";
               $("memeBtn").style.display = "inline-flex";
               setStatus("Jean Phil #" + t.tokenId + " selected. Ready to generate.");
             };
@@ -817,7 +785,6 @@
             out = await api("/api/generate", {
               tokenId: selectedTokenId,
               address: connectedAddress,
-              label: $("labelInput").value.trim(),
               job_id: jobId,
             });
           } catch (e) {
@@ -914,107 +881,6 @@
       connectBtn.onclick = connect;
       genBtn.onclick = generate;
 
-      // ---- Text on me ----
-      const textInput = $("textInput"), textBtn = $("textBtn"), textStatus = $("textStatus"), textResult = $("textResult");
-      let textGenerated = null;
-      function setTextStatus(m, isErr) {
-        textStatus.textContent = m;
-        textStatus.className = "status" + (isErr ? " err" : "");
-      }
-      textInput.addEventListener("input", () => { textBtn.disabled = !textInput.value.trim(); });
-      textBtn.onclick = async () => {
-        const text = textInput.value.trim();
-        if (!text) return;
-        if (!selectedTokenId || !selected) {
-          setTextStatus("Pick one of your Jean Phils above first.", true);
-          return;
-        }
-        textBtn.disabled = true;
-        setTextStatus("Writing it on your Jean Phil…");
-        try {
-          await selected.decode();
-          const c = document.createElement("canvas");
-          c.width = selected.naturalWidth;
-          c.height = selected.naturalHeight;
-          c.getContext("2d").drawImage(selected, 0, 0);
-          const out = await api("/api/text_on_me", {
-            image: c.toDataURL("image/png"),
-            tokenId: selectedTokenId,
-            address: connectedAddress,
-            text,
-          });
-          textGenerated = out.image;
-          textResult.innerHTML = "";
-          const img = document.createElement("img");
-          img.className = "banner";
-          img.src = textGenerated;
-          textResult.appendChild(img);
-          const row = document.createElement("div");
-          row.className = "buttons";
-          const dl = document.createElement("a");
-          dl.className = "btn";
-          dl.textContent = "Download";
-          dl.download = "jeanphil-text.png";
-          dl.href = textGenerated;
-          const copy = document.createElement("button");
-          copy.className = "btn";
-          copy.textContent = "Copy Image";
-          copy.onclick = async () => {
-            try {
-              const blob = await (await fetch(textGenerated)).blob();
-              await navigator.clipboard.write([new ClipboardItem({ "image/png": blob })]);
-              setTextStatus("Copied — paste it anywhere (Ctrl+V).");
-            } catch (e) {
-              setTextStatus("Copy failed — use Download instead.", true);
-            }
-          };
-          const tweet = document.createElement("a");
-          tweet.className = "btn";
-          const t = encodeURIComponent('"' + text + '" — written on my Jean Phil \u{1F440} @jeanphil_nft #JeanPhil');
-          tweet.href = "https://x.com/intent/post?text=" + t;
-          tweet.target = "_blank";
-          tweet.rel = "noopener";
-          tweet.textContent = "Post on X";
-          row.appendChild(dl);
-          row.appendChild(copy);
-          row.appendChild(tweet);
-          textResult.appendChild(row);
-          setTextStatus("Done.  ·  " + out.remaining + " of 1 free Text on me left today.");
-          // thumb (square) + full-resolution portrait -> Text on me gallery (fire and forget)
-          try {
-            await img.decode();
-            const th = document.createElement("canvas");
-            th.width = 384; th.height = 384;
-            th.getContext("2d").drawImage(img, 0, 0, 384, 384);
-            const pv = document.createElement("canvas");
-            pv.width = img.naturalWidth; pv.height = img.naturalHeight;
-            pv.getContext("2d").drawImage(img, 0, 0);
-            api("/api/text_gallery", {
-              image: th.toDataURL("image/jpeg", 0.8),
-              full: pv.toDataURL("image/jpeg", 0.85),
-              tokenId: selectedTokenId,
-              address: connectedAddress,
-              galleryToken: out.galleryToken,
-            }).then(() => loadGalleryInto("gallery_text", "tggrid", "gcolText")).catch(() => {});
-          } catch (e) {}
-        } catch (e) {
-          const m = String(e.message || "");
-          if (m.startsWith("daily_limit")) {
-            setTextStatus("Daily limit reached — 1 free Text on me per day. Come back tomorrow.", true);
-          } else if (m.startsWith("text_flagged")) {
-            setTextStatus("This text is not allowed — keep it friendly.", true);
-          } else if (m.startsWith("bad_text")) {
-            setTextStatus("Text is too long or has unsupported symbols (letters, numbers and basic punctuation only).", true);
-          } else if (m.startsWith("global_daily_limit")) {
-            setTextStatus("The service is at capacity for today — please come back tomorrow.", true);
-          } else {
-            setTextStatus("Generation failed: " + e.message, true);
-          }
-        } finally {
-          textBtn.disabled = !textInput.value.trim();
-        }
-      };
-
       // ---- Lightbox ----
       const lbOverlay = $("lbOverlay"), lbImg = $("lbImg");
       let lbList = [], lbIdx = 0;
@@ -1076,7 +942,6 @@
       }
       function loadGallery() {
         loadGalleryInto("gallery", "ggrid", null);
-        loadGalleryInto("gallery_text", "tggrid", "gcolText");
       }
       loadGallery();
 
@@ -1311,14 +1176,6 @@
       row.appendChild(tweet);
       result.appendChild(row);
       set("Meme ready.  ·  " + (out.remaining != null ? out.remaining + " of 5 free memes left today." : ""));
-      // captions -> meme gallery manifest (cards render client-side); fire and forget
-      api("/api/meme_gallery", {
-        address: connectedAddress,
-        tokenId: selectedTokenId,
-        top: out.top,
-        bottom: out.bottom,
-        galleryToken: out.galleryToken,
-      }).then(() => { if (typeof window.loadMemeGallery === "function") window.loadMemeGallery(); }).catch(() => {});
     } catch (e) {
       result.innerHTML = "";
       if (String(e.message).startsWith("daily_limit")) {
@@ -1334,92 +1191,7 @@
   };
 })();
 
-// ---- Meme Gallery: cards rendered from the manifest (image via proxy) ----
-(function () {
-  const grid = document.getElementById("memeGrid");
-  const sec = document.getElementById("memeGallery");
-  if (!grid || !sec) return;
-  const ov = document.getElementById("memeOverlay");
-  const ovImg = document.getElementById("memeOvImg");
-  const ovDl = document.getElementById("memeOvDl");
 
-  function drawMemeCanvas(img, top, bottom) {
-    const W = 1080, PAD = 28, TEXT_H = 150;
-    const IW = W - PAD * 2;
-    const H = PAD + TEXT_H + IW + TEXT_H + PAD;
-    const c = document.createElement("canvas");
-    c.width = W; c.height = H;
-    const x = c.getContext("2d");
-    x.fillStyle = "#000"; x.fillRect(0, 0, W, H);
-    x.fillStyle = "#fff";
-    x.textAlign = "center"; x.textBaseline = "middle";
-    const fit = (text, maxW, base) => {
-      let size = base;
-      x.font = "800 " + size + "px Arial, Helvetica, sans-serif";
-      while (size > 22 && x.measureText(text).width > maxW) {
-        size -= 4;
-        x.font = "800 " + size + "px Arial, Helvetica, sans-serif";
-      }
-    };
-    const iy = PAD + TEXT_H;
-    x.save();
-    x.beginPath(); x.rect(PAD, iy, IW, IW); x.clip();
-    if (img.naturalWidth) {
-      const s = Math.min(img.naturalWidth, img.naturalHeight);
-      x.drawImage(img, (img.naturalWidth - s) / 2, (img.naturalHeight - s) / 2, s, s, PAD, iy, IW, IW);
-    } else {
-      x.fillStyle = "#141414"; x.fillRect(PAD, iy, IW, IW);
-    }
-    x.restore();
-    fit(top.toUpperCase(), W - PAD * 4, 72);
-    x.fillText(top.toUpperCase(), W / 2, PAD + TEXT_H / 2);
-    fit(bottom.toUpperCase(), W - PAD * 4, 64);
-    x.fillText(bottom.toUpperCase(), W / 2, iy + IW + TEXT_H / 2);
-    return c;
-  }
-
-  window.loadMemeGallery = async function () {
-    try {
-      const d = await api("/api/meme_manifest", {});
-      const memes = (d.memes || []).slice(0, 12);
-      grid.innerHTML = "";
-      if (!memes.length) { sec.style.display = "none"; return; }
-      sec.style.display = "";
-      memes.forEach((m) => {
-        const card = document.createElement("div");
-        card.className = "meme-card";
-        const t = document.createElement("div");
-        t.className = "mtop";
-        t.textContent = m.top;
-        const im = document.createElement("img");
-        im.alt = "Jean Phil #" + m.t;
-        if (m.c) loadNftImage(im, m.c, m.t);
-        else im.src = "data:image/svg+xml;utf8," + encodeURIComponent(
-          '<svg xmlns="http://www.w3.org/2000/svg" width="400" height="400"><rect width="400" height="400" fill="#141414"/><text x="200" y="215" font-family="monospace" font-size="52" fill="#ffffff" text-anchor="middle">#' + m.t + "</text></svg>");
-        const b = document.createElement("div");
-        b.className = "mbot";
-        b.textContent = m.bottom;
-        card.appendChild(t);
-        card.appendChild(im);
-        card.appendChild(b);
-        card.onclick = async () => {
-          try { if (!im.naturalWidth) await im.decode(); } catch (e) {}
-          const url = drawMemeCanvas(im, m.top, m.bottom).toDataURL("image/png");
-          ovImg.src = url;
-          ovDl.href = url;
-          ov.classList.add("open");
-        };
-        grid.appendChild(card);
-      });
-    } catch (e) {}
-  };
-  window.loadMemeGallery();
-
-  const close = () => ov.classList.remove("open");
-  document.getElementById("memeOvClose").addEventListener("click", close);
-  ov.addEventListener("click", (e) => { if (e.target === ov) close(); });
-  document.addEventListener("keydown", (e) => { if (e.key === "Escape") close(); });
-})();
 </script>
 
 </body>

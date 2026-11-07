@@ -14,6 +14,12 @@ on:
 permissions:
   contents: write
 
+# Serialize runs: two runners working the same request file at once caused
+# commit conflicts and double-billed generations.
+concurrency:
+  group: banner-gen
+  cancel-in-progress: false
+
 jobs:
   gen:
     runs-on: ubuntu-latest

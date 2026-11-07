@@ -808,7 +808,7 @@
         if (!selected) return;
         genBtn.disabled = true;
         result.innerHTML = '<div class="spinner"></div>';
-        setStatus("Generating your banner... 2\u20134 minutes on the free runner, it never errors out — you can keep the page open.");
+        setStatus("Generating your banner... usually under 30 seconds, you can keep the page open.");
         try {
           // the worker loads the token art itself — the client upload stays tiny
           const jobId = "g" + Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
@@ -843,7 +843,7 @@
           const dl = document.createElement("a");
           dl.className = "btn";
           dl.textContent = "Download Banner";
-          dl.download = "jeanphil-banner.png";
+          dl.download = "jeanphil-banner.jpg";
           dl.href = generatedImage;
           const copy = document.createElement("button");
           copy.className = "btn";

@@ -789,24 +789,48 @@
 
       const BANNER_W = 1920, BANNER_H = 640;
 
+      async function pollGenJob(jobId) {
+        const deadline = Date.now() + 8 * 60 * 1000;
+        while (Date.now() < deadline) {
+          await new Promise((r) => setTimeout(r, 4000));
+          let st;
+          try {
+            const r = await fetch(API_BASE + "/api/generate?job=" + encodeURIComponent(jobId));
+            st = await r.json();
+          } catch (e) { continue; }
+          if (st.status === "done" && st.image) return st;
+          if (st.status === "error") throw new Error(st.error || "generation failed");
+        }
+        throw new Error("gen_timeout");
+      }
+
       async function generate() {
         if (!selected) return;
         genBtn.disabled = true;
         result.innerHTML = '<div class="spinner"></div>';
-        setStatus("Generating your banner... this takes 2\u20135 minutes, hang tight.");
+        setStatus("Generating your banner... 2\u20134 minutes on the free runner, it never errors out — you can keep the page open.");
         try {
-          await selected.decode();
-          // plain original image -> model paints the scene around the character
-          const c = document.createElement("canvas");
-          c.width = selected.naturalWidth;
-          c.height = selected.naturalHeight;
-          c.getContext("2d").drawImage(selected, 0, 0);
-          const out = await api("/api/generate", {
-            image: c.toDataURL("image/png"),
-            tokenId: selectedTokenId,
-            address: connectedAddress,
-            label: $("labelInput").value.trim(),
-          });
+          // the worker loads the token art itself — the client upload stays tiny
+          const jobId = "g" + Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
+          let out;
+          try {
+            out = await api("/api/generate", {
+              tokenId: selectedTokenId,
+              address: connectedAddress,
+              label: $("labelInput").value.trim(),
+              job_id: jobId,
+            });
+          } catch (e) {
+            // connection broke mid-generation — pick the result up by job id
+            const msg = String(e.message || e);
+            if (!/failed to fetch|networkerror|load failed|timeout/i.test(msg)) throw e;
+            setStatus("Connection hiccup — checking on your banner...");
+            out = await pollGenJob(jobId);
+          }
+          // fire-and-forget start: the result arrives via short polls
+          if (!out.image && out.job_id) {
+            out = await pollGenJob(out.job_id);
+          }
           generatedImage = out.image;
           galleryToken = out.galleryToken || null;
           result.innerHTML = "";

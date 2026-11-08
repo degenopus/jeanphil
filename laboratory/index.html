@@ -540,6 +540,7 @@ $("mutateBtn").onclick = async () => {
     $("mutStatus").textContent = "Transplanting the hairstyle and mustache…";
     const out = await api("/api/mutate", {
       image: c.toDataURL("image/png"),
+      image_url: selectedNft.img || "",
       address,
     });
     const url = out.image;

@@ -772,21 +772,6 @@
         throw new Error("gen_timeout");
       }
 
-      // GPT banners arrive at 1536x1024 (no 3:1 size) — center-crop to the
-      // 3:1 X-banner format. FLUX output is already 3:1 and passes through.
-      async function cropToBanner(dataUrl) {
-        const im = new Image();
-        im.src = dataUrl;
-        await im.decode();
-        if (Math.abs(im.naturalWidth / im.naturalHeight - 3) < 0.05) return dataUrl;
-        const c = document.createElement("canvas");
-        c.width = im.naturalWidth;
-        c.height = Math.round(im.naturalWidth / 3);
-        const y = Math.max(0, Math.round((im.naturalHeight - c.height) / 2));
-        c.getContext("2d").drawImage(im, 0, y, im.naturalWidth, c.height, 0, 0, c.width, c.height);
-        return c.toDataURL("image/jpeg", 0.92);
-      }
-
       async function generate() {
         if (!selected) return;
         genBtn.disabled = true;
@@ -827,7 +812,7 @@
           if (!out.image && out.job_id) {
             out = await pollGenJob(out.job_id);
           }
-          generatedImage = await cropToBanner(out.image);
+          generatedImage = out.image;
           galleryToken = out.galleryToken || null;
           result.innerHTML = "";
           const img = document.createElement("img");

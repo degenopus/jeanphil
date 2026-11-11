@@ -772,11 +772,26 @@
         throw new Error("gen_timeout");
       }
 
+      // GPT banners arrive at 1536x1024 (no 3:1 size) — center-crop to the
+      // 3:1 X-banner format. FLUX output is already 3:1 and passes through.
+      async function cropToBanner(dataUrl) {
+        const im = new Image();
+        im.src = dataUrl;
+        await im.decode();
+        if (Math.abs(im.naturalWidth / im.naturalHeight - 3) < 0.05) return dataUrl;
+        const c = document.createElement("canvas");
+        c.width = im.naturalWidth;
+        c.height = Math.round(im.naturalWidth / 3);
+        const y = Math.max(0, Math.round((im.naturalHeight - c.height) / 2));
+        c.getContext("2d").drawImage(im, 0, y, im.naturalWidth, c.height, 0, 0, c.width, c.height);
+        return c.toDataURL("image/jpeg", 0.92);
+      }
+
       async function generate() {
         if (!selected) return;
         genBtn.disabled = true;
         result.innerHTML = '<div class="spinner"></div>';
-        setStatus("Generating your banner... usually under 30 seconds, you can keep the page open.");
+        setStatus("Generating your banner... usually under 90 seconds, you can keep the page open.");
         try {
           // the worker loads the token art itself — the client upload stays tiny
           const jobId = "g" + Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
@@ -798,7 +813,7 @@
           if (!out.image && out.job_id) {
             out = await pollGenJob(out.job_id);
           }
-          generatedImage = out.image;
+          generatedImage = await cropToBanner(out.image);
           galleryToken = out.galleryToken || null;
           result.innerHTML = "";
           const img = document.createElement("img");

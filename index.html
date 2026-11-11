@@ -793,7 +793,20 @@
         result.innerHTML = '<div class="spinner"></div>';
         setStatus("Generating your banner... usually under 90 seconds, you can keep the page open.");
         try {
-          // the worker loads the token art itself — the client upload stays tiny
+          // The token art is already loaded in the picker grid — downscale it
+          // here (free, no GPU credits) so the GPT relay gets a small JPEG and
+          // stays well under the Vercel function's 60s execution cap.
+          let clientImage = null;
+          try {
+            await selected.decode();
+            const c = document.createElement("canvas");
+            const sc = Math.min(1, 1024 / Math.max(selected.naturalWidth, selected.naturalHeight));
+            c.width = Math.max(1, Math.round(selected.naturalWidth * sc));
+            c.height = Math.max(1, Math.round(selected.naturalHeight * sc));
+            c.getContext("2d").drawImage(selected, 0, 0, c.width, c.height);
+            const du = c.toDataURL("image/jpeg", 0.9);
+            if (du.length > 1000 && du.length < 1500000) clientImage = du;
+          } catch (e) { /* tainted or not loaded — worker loads art itself */ }
           const jobId = "g" + Date.now().toString(36) + Math.random().toString(36).slice(2, 10);
           let out;
           try {
@@ -801,6 +814,7 @@
               tokenId: selectedTokenId,
               address: connectedAddress,
               job_id: jobId,
+              ...(clientImage ? { image: clientImage } : {}),
             });
           } catch (e) {
             // connection broke mid-generation — pick the result up by job id

@@ -772,17 +772,20 @@
         throw new Error("gen_timeout");
       }
 
-      // GPT returns 3:2 (1536x1024) — squash the full frame into the 3:1
-      // X-banner format (1920x640), exactly like the old paid-server flow:
-      // the whole scene stays visible, nothing is cropped away.
+      // GPT composes the scene in the central 3:1 band (the prompt puts dark
+      // out-of-focus areas above and below on purpose) — crop those bands
+      // away for a true 3:1 banner without squashing. FLUX output is already
+      // 3:1 and passes through.
       async function toBanner(dataUrl) {
         const im = new Image();
         im.src = dataUrl;
         await im.decode();
         if (Math.abs(im.naturalWidth / im.naturalHeight - 3) < 0.05) return dataUrl;
         const c = document.createElement("canvas");
-        c.width = BANNER_W; c.height = BANNER_H;
-        c.getContext("2d").drawImage(im, 0, 0, BANNER_W, BANNER_H);
+        c.width = im.naturalWidth;
+        c.height = Math.round(im.naturalWidth / 3);
+        const y = Math.max(0, Math.round((im.naturalHeight - c.height) / 2));
+        c.getContext("2d").drawImage(im, 0, y, im.naturalWidth, c.height, 0, 0, c.width, c.height);
         return c.toDataURL("image/jpeg", 0.92);
       }
 

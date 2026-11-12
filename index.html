@@ -131,6 +131,17 @@
   .sync.stale { color:#c00; }
   .status { font-size:13px; letter-spacing:.04em; text-align:center; min-height:18px; }
   .status.err { color:#c00; }
+  .status.busy {
+    display:block; margin:14px auto 6px; padding:14px 22px; max-width:520px;
+    background:#111; color:#fff; font-size:15px; font-weight:700;
+    letter-spacing:.06em; text-transform:uppercase; border-radius:10px;
+    box-shadow:0 8px 28px rgba(0,0,0,.28);
+    animation:busyPulse 1.4s ease-in-out infinite;
+  }
+  @keyframes busyPulse {
+    0%,100% { transform:scale(1); opacity:1; }
+    50% { transform:scale(1.035); opacity:.86; }
+  }
   .grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(140px, 1fr)); gap:14px; width:100%; }
   .cell { position:relative; border:2px solid #000; border-radius:8px; overflow:hidden; cursor:pointer; aspect-ratio:1/1; transition:transform .12s ease, box-shadow .12s ease; }
   .cell:hover { transform:translateY(-2px); box-shadow:0 6px 18px rgba(0,0,0,.25); }
@@ -794,6 +805,7 @@
         genBtn.disabled = true;
         result.innerHTML = '<div class="spinner"></div>';
         setStatus("Generating your banner... usually under 90 seconds, you can keep the page open.");
+        status.classList.add("busy");
         try {
           // The token art is already loaded in the picker grid — downscale it
           // here (free, no GPU credits) so the GPT relay gets a small JPEG and

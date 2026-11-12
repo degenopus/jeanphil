@@ -772,6 +772,20 @@
         throw new Error("gen_timeout");
       }
 
+      // GPT returns 3:2 (1536x1024) — squash the full frame into the 3:1
+      // X-banner format (1920x640), exactly like the old paid-server flow:
+      // the whole scene stays visible, nothing is cropped away.
+      async function toBanner(dataUrl) {
+        const im = new Image();
+        im.src = dataUrl;
+        await im.decode();
+        if (Math.abs(im.naturalWidth / im.naturalHeight - 3) < 0.05) return dataUrl;
+        const c = document.createElement("canvas");
+        c.width = BANNER_W; c.height = BANNER_H;
+        c.getContext("2d").drawImage(im, 0, 0, BANNER_W, BANNER_H);
+        return c.toDataURL("image/jpeg", 0.92);
+      }
+
       async function generate() {
         if (!selected) return;
         genBtn.disabled = true;
@@ -812,7 +826,7 @@
           if (!out.image && out.job_id) {
             out = await pollGenJob(out.job_id);
           }
-          generatedImage = out.image;
+          generatedImage = await toBanner(out.image);
           galleryToken = out.galleryToken || null;
           result.innerHTML = "";
           const img = document.createElement("img");
